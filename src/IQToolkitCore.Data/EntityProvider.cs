@@ -74,7 +74,7 @@ namespace IQToolkit.Data
         /// <summary>
         /// The <see cref="QueryCache"/> used to cache queries.
         /// </summary>
-        public QueryCache Cache
+        public QueryCache? Cache
         {
             get { return this.cache; }
             set { this.cache = value; }

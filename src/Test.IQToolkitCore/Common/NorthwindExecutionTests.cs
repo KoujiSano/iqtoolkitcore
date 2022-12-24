@@ -16,7 +16,7 @@ namespace Test
         [Fact]
         public void TestCompiledQuerySingleton()        {
             var fn = QueryCompiler.Compile((string id) => db.Customers.SingleOrDefault(c => c.CustomerID == id));
-            Customer cust = fn("ALKFI");
+            Customer? cust = fn("ALKFI");
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace Test
         {
             Customer alfki = new Customer { CustomerID = "ALFKI" };
             var list = db.Customers.Where(c => c == alfki).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal("ALFKI", list[0].CustomerID);
         }
 
@@ -98,7 +98,7 @@ namespace Test
             var list = db.Customers.Where(c => c.City == "London").Select(c => c.City).ToList();
             Assert.Equal(6, list.Count);
             Assert.Equal("London", list[0]);
-            Assert.Equal(true, list.All(x => x == "London"));
+            Assert.True(list.All(x => x == "London"));
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace Test
             var list = db.Customers.Where(c => c.City == "London").Select(c => new { c.City }).ToList();
             Assert.Equal(6, list.Count);
             Assert.Equal("London", list[0].City);
-            Assert.Equal(true, list.All(x => x.City == "London"));
+            Assert.True(list.All(x => x.City == "London"));
         }
 
         [Fact]
@@ -116,8 +116,8 @@ namespace Test
             var list = db.Customers.Where(c => c.City == "London").Select(c => new { c.City, c.Phone }).ToList();
             Assert.Equal(6, list.Count);
             Assert.Equal("London", list[0].City);
-            Assert.Equal(true, list.All(x => x.City == "London"));
-            Assert.Equal(true, list.All(x => x.Phone != null));
+            Assert.True(list.All(x => x.City == "London"));
+            Assert.True(list.All(x => x.Phone != null));
         }
 
         [Fact]
@@ -133,8 +133,8 @@ namespace Test
             var list = db.Customers.Where(c => c.City == "London").Select(c => new { c.City, c }).ToList();
             Assert.Equal(6, list.Count);
             Assert.Equal("London", list[0].City);
-            Assert.Equal(true, list.All(x => x.City == "London"));
-            Assert.Equal(true, list.All(x => x.c.City == x.City));
+            Assert.True(list.All(x => x.City == "London"));
+            Assert.True(list.All(x => x.c.City == x.City));
         }
 
         [Fact]
@@ -142,7 +142,7 @@ namespace Test
         {
             var list = db.Customers.Where(c => c.City == "London").Select(c => new { X = 10 }).ToList();
             Assert.Equal(6, list.Count);
-            Assert.Equal(true, list.All(x => x.X == 10));
+            Assert.True(list.All(x => x.X == 10));
         }
 
         [Fact]
@@ -150,15 +150,15 @@ namespace Test
         {
             var list = db.Customers.Select(c => 10).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, list.All(x => x == 10));
+            Assert.True(list.All(x => x == 10));
         }
 
         [Fact]
         public void TestSelectConstantNullString()
         {
-            var list = db.Customers.Select(c => (string)null).ToList();
+            var list = db.Customers.Select(c => (string?)null).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, list.All(x => x == null));
+            Assert.True(list.All(x => x == null));
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace Test
             int x = 10;
             var list = db.Customers.Select(c => x).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, list.All(y => y == 10));
+            Assert.True(list.All(y => y == 10));
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace Test
                 where c.CustomerID == "ALFKI"
                 select db.Orders.Where(o => o.CustomerID == c.CustomerID).Select(o => o.OrderID)
                 ).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Count());
         }
 
@@ -190,7 +190,7 @@ namespace Test
                 where c.CustomerID == "ALFKI"
                 select new { Foos = db.Orders.Where(o => o.CustomerID == c.CustomerID).Select(o => o.OrderID).ToList() }
                 ).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Foos.Count);
         }
 
@@ -227,7 +227,7 @@ namespace Test
                 join o in db.Orders on c.CustomerID equals o.CustomerID into ords
                 select new { cust = c, ords = ords.Count() }
                 ).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].ords);
         }
 
@@ -242,8 +242,8 @@ namespace Test
                 select new { c, o }
                 ).ToList();
 
-            Assert.Equal(1, list.Count);
-            Assert.Equal(null, list[0].o);
+            Assert.Single(list);
+            Assert.Null(list[0].o);
         }
 
         [Fact]
@@ -285,7 +285,7 @@ namespace Test
             var list = db.Customers.OrderBy(c => c.CustomerID).Select(c => c.CustomerID).ToList();
             var sorted = list.OrderBy(c => c).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -294,7 +294,7 @@ namespace Test
             var list = db.Customers.OrderBy(c => c.Phone).OrderBy(c => c.CustomerID).ToList();
             var sorted = list.OrderBy(c => c.CustomerID).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -303,7 +303,7 @@ namespace Test
             var list = db.Customers.OrderBy(c => c.CustomerID).ThenBy(c => c.Phone).ToList();
             var sorted = list.OrderBy(c => c.CustomerID).ThenBy(c => c.Phone).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -312,7 +312,7 @@ namespace Test
             var list = db.Customers.OrderByDescending(c => c.CustomerID).ToList();
             var sorted = list.OrderByDescending(c => c.CustomerID).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -321,7 +321,7 @@ namespace Test
             var list = db.Customers.OrderByDescending(c => c.CustomerID).ThenBy(c => c.Country).ToList();
             var sorted = list.OrderByDescending(c => c.CustomerID).ThenBy(c => c.Country).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -330,7 +330,7 @@ namespace Test
             var list = db.Customers.OrderByDescending(c => c.CustomerID).ThenByDescending(c => c.Country).ToList();
             var sorted = list.OrderByDescending(c => c.CustomerID).ThenByDescending(c => c.Country).ToList();
             Assert.Equal(91, list.Count);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace Test
                 ).ToList();
 
             var sorted = list.OrderBy(x => x.CustomerID).ThenBy(x => x.OrderID);
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -356,13 +356,13 @@ namespace Test
                 select new { c.CustomerID, o.OrderID }
                 ).ToList();
             var sorted = list.OrderBy(x => x.CustomerID).ThenBy(x => x.OrderID).ToList();
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
         public void TestCountProperty()
         {
-            var list = db.Customers.Where(c => c.Orders.Count > 0).ToList();
+            var list = db.Customers.Where(c => c.Orders != null && c.Orders.Count > 0).ToList();
             Assert.Equal(89, list.Count);
         }
 
@@ -377,7 +377,7 @@ namespace Test
         public void TestGroupByOne()
         {
             var list = db.Customers.Where(c => c.City == "London").GroupBy(c => c.City).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Count());
         }
 
@@ -392,7 +392,7 @@ namespace Test
         public void TestGroupBySum()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID).Select(g => g.Sum(o => (o.CustomerID == "ALFKI" ? 1 : 1))).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0]);
         }
 
@@ -400,7 +400,7 @@ namespace Test
         public void TestGroupByCount()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID).Select(g => g.Count()).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0]);
         }
 
@@ -408,7 +408,7 @@ namespace Test
         public void TestGroupByLongCount()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID).Select(g => g.LongCount()).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6L, list[0]);
         }
 
@@ -424,7 +424,7 @@ namespace Test
                         Max = g.Max(o => o.OrderID),
                         Avg = g.Average(o => o.OrderID)
                     }).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Sum);
         }
 
@@ -440,7 +440,7 @@ namespace Test
                         Max = g.Max(o => o.OrderID),
                         Avg = g.Average(o => o.OrderID)
                     }).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Sum);           
         }
 
@@ -448,7 +448,7 @@ namespace Test
         public void TestGroupByWithElementSelectorSum()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID, o => (o.CustomerID == "ALFKI" ? 1 : 1)).Select(g => g.Sum()).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0]);
         }
 
@@ -457,7 +457,7 @@ namespace Test
         {
             // note: groups are retrieved through a separately execute subquery per row
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID, o => (o.CustomerID == "ALFKI" ? 1 : 1)).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Count());
             Assert.Equal(6, list[0].Sum());
         }
@@ -466,7 +466,7 @@ namespace Test
         public void TestGroupByWithElementSelectorSumMax()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID, o => (o.CustomerID == "ALFKI" ? 1 : 1)).Select(g => new { Sum = g.Sum(), Max = g.Max() }).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0].Sum);
             Assert.Equal(1, list[0].Max);
         }
@@ -475,7 +475,7 @@ namespace Test
         public void TestGroupByWithAnonymousElement()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID, o => new { X = (o.CustomerID == "ALFKI" ? 1 : 1) }).Select(g => g.Sum(x => x.X)).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(6, list[0]);
         }
 
@@ -489,7 +489,7 @@ namespace Test
         [Fact]
         public void TestGroupByWithCountInWhere()
         {
-            var list = db.Customers.Where(a => a.Orders.Count() > 15).GroupBy(a => a.City).ToList();
+            var list = db.Customers.Where(a => a.Orders != null && a.Orders.Count() > 15).GroupBy(a => a.City).ToList();
             Assert.Equal(9, list.Count);
         }
 
@@ -498,10 +498,10 @@ namespace Test
         {
             // note: order-by is lost when group-by is applied (the sequence of groups is not ordered)
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").OrderBy(o => o.OrderID).GroupBy(o => o.CustomerID).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             var grp = list[0].ToList();
             var sorted = grp.OrderBy(o => o.OrderID);
-            Assert.Equal(true, Enumerable.SequenceEqual(grp, sorted));
+            Assert.True(Enumerable.SequenceEqual(grp, sorted));
         }
 
         [Fact]
@@ -510,7 +510,7 @@ namespace Test
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").OrderBy(o => o.OrderID).GroupBy(o => o.CustomerID).SelectMany(g => g).ToList();
             Assert.Equal(6, list.Count);
             var sorted = list.OrderBy(o => o.OrderID).ToList();
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -587,7 +587,7 @@ namespace Test
         public void TestDistinctGroupBy()
         {
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").Distinct().GroupBy(o => o.CustomerID).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
@@ -595,7 +595,7 @@ namespace Test
         {
             // distinct after group-by should not do anything
             var list = db.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID).Distinct().ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
@@ -654,7 +654,7 @@ namespace Test
         {
             // distinct must be forced to apply after top has been computed
             var list = db.Orders.OrderBy(o => o.CustomerID).Select(o => o.CustomerID).Take(5).Distinct().ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
@@ -684,7 +684,7 @@ namespace Test
         public void TestFirst()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).First();
-            Assert.NotEqual(null, first);
+            Assert.NotNull(first);
             Assert.Equal("ROMEY", first.CustomerID);
         }
 
@@ -692,7 +692,7 @@ namespace Test
         public void TestFirstPredicate()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).First(c => c.City == "London");
-            Assert.NotEqual(null, first);
+            Assert.NotNull(first);
             Assert.Equal("EASTC", first.CustomerID);
         }
 
@@ -700,7 +700,7 @@ namespace Test
         public void TestWhereFirst()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).Where(c => c.City == "London").First();
-            Assert.NotEqual(null, first);
+            Assert.NotNull(first);
             Assert.Equal("EASTC", first.CustomerID);
         }
 
@@ -708,7 +708,7 @@ namespace Test
         public void TestFirstOrDefault()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).FirstOrDefault();
-            Assert.NotEqual(null, first);
+            Assert.NotNull(first);
             Assert.Equal("ROMEY", first.CustomerID);
         }
 
@@ -716,23 +716,23 @@ namespace Test
         public void TestFirstOrDefaultPredicate()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).FirstOrDefault(c => c.City == "London");
-            Assert.NotEqual(null, first);
-            Assert.Equal("EASTC", first.CustomerID);
+            Assert.NotNull(first);
+            Assert.Equal("EASTC", first?.CustomerID);
         }
 
         [Fact]
         public void TestWhereFirstOrDefault()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).Where(c => c.City == "London").FirstOrDefault();
-            Assert.NotEqual(null, first);
-            Assert.Equal("EASTC", first.CustomerID);
+            Assert.NotNull(first);
+            Assert.Equal("EASTC", first?.CustomerID);
         }
 
         [Fact]
         public void TestFirstOrDefaultPredicateNoMatch()
         {
             var first = db.Customers.OrderBy(c => c.ContactName).FirstOrDefault(c => c.City == "SpongeBob");
-            Assert.Equal(null, first);
+            Assert.Null(first);
         }
 
         [Fact]
@@ -784,7 +784,7 @@ namespace Test
         public void TestLast()
         {
             var last = db.Customers.OrderBy(c => c.ContactName).Last();
-            Assert.NotEqual(null, last);
+            Assert.NotNull(last);
             Assert.Equal("WOLZA", last.CustomerID);
         }
 
@@ -792,7 +792,7 @@ namespace Test
         public void TestLastPredicate()
         {
             var last = db.Customers.OrderBy(c => c.ContactName).Last(c => c.City == "London");
-            Assert.NotEqual(null, last);
+            Assert.NotNull(last);
             Assert.Equal("BSBEV", last.CustomerID);
         }
 
@@ -800,7 +800,7 @@ namespace Test
         public void TestWhereLast()
         {
             var last = db.Customers.OrderBy(c => c.ContactName).Where(c => c.City == "London").Last();
-            Assert.NotEqual(null, last);
+            Assert.NotNull(last);
             Assert.Equal("BSBEV", last.CustomerID);
         }
 
@@ -808,7 +808,7 @@ namespace Test
         public void TestLastOrDefault()
         {
            var last = db.Customers.OrderBy(c => c.ContactName).LastOrDefault();
-           Assert.NotEqual(null, last);
+           Assert.NotNull(last);
            Assert.Equal("WOLZA", last.CustomerID);
         }
 
@@ -816,7 +816,7 @@ namespace Test
         public void TestLastOrDefaultPredicate()
         {
             var last = db.Customers.OrderBy(c => c.ContactName).LastOrDefault(c => c.City == "London");
-            Assert.NotEqual(null, last);
+            Assert.NotNull(last);
             Assert.Equal("BSBEV", last.CustomerID);
         }
 
@@ -824,7 +824,7 @@ namespace Test
         public void TestWhereLastOrDefault()
         {
             var last = db.Customers.OrderBy(c => c.ContactName).Where(c => c.City == "London").LastOrDefault();
-            Assert.NotEqual(null, last);
+            Assert.NotNull(last);
             Assert.Equal("BSBEV", last.CustomerID);
         }
 
@@ -832,7 +832,7 @@ namespace Test
         public void TestLastOrDefaultNoMatches()
         {
             var last = db.Customers.OrderBy(c => c.ContactName).LastOrDefault(c => c.City == "SpongeBob");
-            Assert.Equal(null, last);
+            Assert.Null(last);
         }
 
         [Fact]
@@ -848,7 +848,7 @@ namespace Test
         public void TestSinglePredicate()
         {
             var single = db.Customers.Single(c => c.CustomerID == "ALFKI");
-            Assert.NotEqual(null, single);
+            Assert.NotNull(single);
             Assert.Equal("ALFKI", single.CustomerID);
         }
 
@@ -856,7 +856,7 @@ namespace Test
         public void TestWhereSingle()
         {
             var single = db.Customers.Where(c => c.CustomerID == "ALFKI").Single();
-            Assert.NotEqual(null, single);
+            Assert.NotNull(single);
             Assert.Equal("ALFKI", single.CustomerID);
         }
 
@@ -873,7 +873,7 @@ namespace Test
         public void TestSingleOrDefaultPredicate()
         {
             var single = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI");
-            Assert.NotEqual(null, single);
+            Assert.NotNull(single);
             Assert.Equal("ALFKI", single.CustomerID);
         }
 
@@ -881,7 +881,7 @@ namespace Test
         public void TestWhereSingleOrDefault()
         {
             var single = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault();
-            Assert.NotEqual(null, single);
+            Assert.NotNull(single);
             Assert.Equal("ALFKI", single.CustomerID);
         }
 
@@ -889,21 +889,21 @@ namespace Test
         public void TestSingleOrDefaultNoMatches()
         {
             var single = db.Customers.SingleOrDefault(c => c.CustomerID == "SpongeBob");
-            Assert.Equal(null, single);
+            Assert.Null(single);
         }
 
         [Fact]
         public void TestAnyTopLevel()
         {
             var any = db.Customers.Any();
-            Assert.Equal(true, any);
+            Assert.True(any);
         }
 
         [Fact]
         public void TestAnyWithSubquery()
         {
-            var list = db.Customers.Where(c => c.Orders.Any(o => o.CustomerID == "ALFKI")).ToList();
-            Assert.Equal(1, list.Count);
+            var list = db.Customers.Where(c => c.Orders != null && c.Orders.Any(o => o.CustomerID == "ALFKI")).ToList();
+            Assert.Single(list);
         }
 
         [Fact]
@@ -926,7 +926,7 @@ namespace Test
         [Fact]
         public void TestAllWithSubquery()
         {
-            var list = db.Customers.Where(c => c.Orders.All(o => o.CustomerID == "ALFKI")).ToList();
+            var list = db.Customers.Where(c => c.Orders != null && c.Orders.All(o => o.CustomerID == "ALFKI")).ToList();
             // includes customers w/ no orders
             Assert.Equal(3, list.Count);
         }
@@ -948,7 +948,7 @@ namespace Test
         {
             // all customers have name length > 0?
             var all = db.Customers.All(c => c.ContactName.Length > 0);
-            Assert.Equal(true, all);
+            Assert.True(all);
         }
 
         [Fact]
@@ -956,7 +956,7 @@ namespace Test
         {
             // all customers have name with 'a'
             var all = db.Customers.All(c => c.ContactName.Contains("a"));
-            Assert.Equal(false, all);
+            Assert.False(all);
         }
 
         [Fact]
@@ -979,7 +979,7 @@ namespace Test
         public void TestContainsTopLevel()
         {
             var contains = db.Customers.Select(c => c.CustomerID).Contains("ALFKI");
-            Assert.Equal(true, contains);
+            Assert.True(contains);
         }
 
         [Fact]
@@ -1006,7 +1006,7 @@ namespace Test
             var list = db.Customers.Select(c => new { City = (c.City == "London" ? null : c.City), Country = (c.CustomerID == "EASTC" ? null : c.Country) })
                          .Where(x => (x.City ?? "NoCity") == "NoCity").ToList();
             Assert.Equal(6, list.Count);
-            Assert.Equal(null, list[0].City);
+            Assert.Null(list[0].City);
         }
 
         [Fact]
@@ -1014,9 +1014,9 @@ namespace Test
         {
             var list = db.Customers.Select(c => new { City = (c.City == "London" ? null : c.City), Country = (c.CustomerID == "EASTC" ? null : c.Country) })
                          .Where(x => (x.City ?? x.Country ?? "NoCityOrCountry") == "NoCityOrCountry").ToList();
-            Assert.Equal(1, list.Count);
-            Assert.Equal(null, list[0].City);
-            Assert.Equal(null, list[0].Country);
+            Assert.Single(list);
+            Assert.Null(list[0].City);
+            Assert.Null(list[0].Country);
         }
 
         // framework function tests
@@ -1074,28 +1074,28 @@ namespace Test
         public void TestStringConcatImplicit2Args()
         {
             var list = db.Customers.Where(c => c.ContactName + "X" == "Maria AndersX").ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
         public void TestStringConcatExplicit2Args()
         {
             var list = db.Customers.Where(c => string.Concat(c.ContactName, "X") == "Maria AndersX").ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
         public void TestStringConcatExplicit3Args()
         {
             var list = db.Customers.Where(c => string.Concat(c.ContactName, "X", c.Country) == "Maria AndersXGermany").ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
         public void TestStringConcatExplicitNArgs()
         {
             var list = db.Customers.Where(c => string.Concat(new string[] { c.ContactName, "X", c.Country }) == "Maria AndersXGermany").ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
@@ -1123,7 +1123,7 @@ namespace Test
         public void TestStringSubstring()
         {
             var list = db.Customers.Where(c => c.City.Substring(0, 4) == "Seat").ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal("Seattle", list[0].City);
         }
 
@@ -1131,7 +1131,7 @@ namespace Test
         public void TestStringSubstringNoLength()
         {
             var list = db.Customers.Where(c => c.City.Substring(4) == "tle").ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal("Seattle", list[0].City);
         }
 
@@ -1165,7 +1165,7 @@ namespace Test
             var notrim = db.Customers.Where(c => c.CustomerID == "ALFKI").Max(c => ("  " + c.City + " "));
             var trim = db.Customers.Where(c => c.CustomerID == "ALFKI").Max(c => ("  " + c.City + " ").Trim());
             Assert.NotEqual(notrim, trim);
-            Assert.Equal(notrim.Trim(), trim);
+            Assert.Equal(notrim?.Trim(), trim);
         }
 
         [Fact]
@@ -1253,7 +1253,7 @@ namespace Test
         public void TestDateTimeAddYears()
         {
             var od = db.Orders.FirstOrDefault(o => o.OrderDate == new DateTime(1997, 8, 25) && o.OrderDate.AddYears(2).Year == 1999);
-            Assert.NotEqual(null, od);
+            Assert.NotNull(od);
         }
 
         [Fact]
@@ -1261,7 +1261,7 @@ namespace Test
         public void TestDateTimeAddMonths()
         {
             var od = db.Orders.FirstOrDefault(o => o.OrderDate == new DateTime(1997, 8, 25) && o.OrderDate.AddMonths(2).Month == 10);
-            Assert.NotEqual(null, od);
+            Assert.NotNull(od);
         }
 
         [Fact]
@@ -1269,7 +1269,7 @@ namespace Test
         public void TestDateTimeAddDays()
         {
             var od = db.Orders.FirstOrDefault(o => o.OrderDate == new DateTime(1997, 8, 25) && o.OrderDate.AddDays(2).Day == 27);
-            Assert.NotEqual(null, od);
+            Assert.NotNull(od);
         }
 
         [Fact]
@@ -1277,7 +1277,7 @@ namespace Test
         public void TestDateTimeAddHours()
         {
             var od = db.Orders.FirstOrDefault(o => o.OrderDate == new DateTime(1997, 8, 25) && o.OrderDate.AddHours(3).Hour == 3);
-            Assert.NotEqual(null, od);
+            Assert.NotNull(od);
         }
 
         [Fact]
@@ -1285,7 +1285,7 @@ namespace Test
         public void TestDateTimeAddMinutes()
         {
             var od = db.Orders.FirstOrDefault(o => o.OrderDate == new DateTime(1997, 8, 25) && o.OrderDate.AddMinutes(5).Minute == 5);
-            Assert.NotEqual(null, od);
+            Assert.NotNull(od);
         }
 
         [Fact]
@@ -1293,7 +1293,7 @@ namespace Test
         public void TestDateTimeAddSeconds()
         {
             var od = db.Orders.FirstOrDefault(o => o.OrderDate == new DateTime(1997, 8, 25) && o.OrderDate.AddSeconds(6).Second == 6);
-            Assert.NotEqual(null, od);
+            Assert.NotNull(od);
         }
 
         [Fact]
@@ -1456,8 +1456,8 @@ namespace Test
         {
             var cmpLT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Seattle") < 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Berlin") < 0);
-            Assert.NotEqual(null, cmpLT);
-            Assert.Equal(null, cmpEQ);
+            Assert.NotNull(cmpLT);
+            Assert.Null(cmpEQ);
         }
 
         [Fact]
@@ -1466,9 +1466,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Seattle") <= 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Berlin") <= 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Aaa") <= 0);
-            Assert.NotEqual(null, cmpLE);
-            Assert.NotEqual(null, cmpEQ);
-            Assert.Equal(null, cmpGT);
+            Assert.NotNull(cmpLE);
+            Assert.NotNull(cmpEQ);
+            Assert.Null(cmpGT);
         }
 
         [Fact]
@@ -1476,8 +1476,8 @@ namespace Test
         {
             var cmpLT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Aaa") > 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Berlin") > 0);
-            Assert.NotEqual(null, cmpLT);
-            Assert.Equal(null, cmpEQ);
+            Assert.NotNull(cmpLT);
+            Assert.Null(cmpEQ);
         }
 
         [Fact]
@@ -1486,9 +1486,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Seattle") >= 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Berlin") >= 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Aaa") >= 0);
-            Assert.Equal(null, cmpLE);
-            Assert.NotEqual(null, cmpEQ);
-            Assert.NotEqual(null, cmpGT);
+            Assert.Null(cmpLE);
+            Assert.NotNull(cmpEQ);
+            Assert.NotNull(cmpGT);
         }
 
         [Fact]
@@ -1497,9 +1497,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Seattle") == 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Berlin") == 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Aaa") == 0);
-            Assert.Equal(null, cmpLE);
-            Assert.NotEqual(null, cmpEQ);
-            Assert.Equal(null, cmpGT);
+            Assert.Null(cmpLE);
+            Assert.NotNull(cmpEQ);
+            Assert.Null(cmpGT);
         }
 
         [Fact]
@@ -1508,9 +1508,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Seattle") != 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Berlin") != 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => c.City.CompareTo("Aaa") != 0);
-            Assert.NotEqual(null, cmpLE);
-            Assert.Equal(null, cmpEQ);
-            Assert.NotEqual(null, cmpGT);
+            Assert.NotNull(cmpLE);
+            Assert.Null(cmpEQ);
+            Assert.NotNull(cmpGT);
         }
 
         [Fact]
@@ -1529,8 +1529,8 @@ namespace Test
         {
             var cmpLT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Seattle") < 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Berlin") < 0);
-            Assert.NotEqual(null, cmpLT);
-            Assert.Equal(null, cmpEQ);
+            Assert.NotNull(cmpLT);
+            Assert.Null(cmpEQ);
         }
 
         [Fact]
@@ -1539,9 +1539,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Seattle") <= 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Berlin") <= 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Aaa") <= 0);
-            Assert.NotEqual(null, cmpLE);
-            Assert.NotEqual(null, cmpEQ);
-            Assert.Equal(null, cmpGT);
+            Assert.NotNull(cmpLE);
+            Assert.NotNull(cmpEQ);
+            Assert.Null(cmpGT);
         }
 
         [Fact]
@@ -1549,8 +1549,8 @@ namespace Test
         {
             var cmpLT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Aaa") > 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Berlin") > 0);
-            Assert.NotEqual(null, cmpLT);
-            Assert.Equal(null, cmpEQ);
+            Assert.NotNull(cmpLT);
+            Assert.Null(cmpEQ);
         }
 
         [Fact]
@@ -1559,9 +1559,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Seattle") >= 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Berlin") >= 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Aaa") >= 0);
-            Assert.Equal(null, cmpLE);
-            Assert.NotEqual(null, cmpEQ);
-            Assert.NotEqual(null, cmpGT);
+            Assert.Null(cmpLE);
+            Assert.NotNull(cmpEQ);
+            Assert.NotNull(cmpGT);
         }
 
         [Fact]
@@ -1570,9 +1570,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Seattle") == 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Berlin") == 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Aaa") == 0);
-            Assert.Equal(null, cmpLE);
-            Assert.NotEqual(null, cmpEQ);
-            Assert.Equal(null, cmpGT);
+            Assert.Null(cmpLE);
+            Assert.NotNull(cmpEQ);
+            Assert.Null(cmpGT);
         }
 
         [Fact]
@@ -1581,9 +1581,9 @@ namespace Test
             var cmpLE = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Seattle") != 0);
             var cmpEQ = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Berlin") != 0);
             var cmpGT = db.Customers.Where(c => c.CustomerID == "ALFKI").SingleOrDefault(c => string.Compare(c.City, "Aaa") != 0);
-            Assert.NotEqual(null, cmpLE);
-            Assert.Equal(null, cmpEQ);
-            Assert.NotEqual(null, cmpGT);
+            Assert.NotNull(cmpLE);
+            Assert.Null(cmpEQ);
+            Assert.NotNull(cmpGT);
         }
 
         [Fact]
@@ -1674,7 +1674,7 @@ namespace Test
         {
             // prove that decimals are treated normally with respect to normal comparison operators
             var alfki = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1.0m : 3.0m) < 2.0m);
-            Assert.NotEqual(null, alfki);
+            Assert.NotNull(alfki);
         }
 
         [Fact]
@@ -1682,8 +1682,8 @@ namespace Test
         {
             var alfki = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1 : 3) < 2);
             var alfkiN = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 3 : 1) < 2);
-            Assert.NotEqual(null, alfki);
-            Assert.Equal(null, alfkiN);
+            Assert.NotNull(alfki);
+            Assert.Null(alfkiN);
         }
 
         [Fact]
@@ -1692,9 +1692,9 @@ namespace Test
             var alfki = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1 : 3) <= 2);
             var alfki2 = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 2 : 3) <= 2);
             var alfkiN = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 3 : 1) <= 2);
-            Assert.NotEqual(null, alfki);
-            Assert.NotEqual(null, alfki2);
-            Assert.Equal(null, alfkiN);
+            Assert.NotNull(alfki);
+            Assert.NotNull(alfki2);
+            Assert.Null(alfkiN);
         }
 
         [Fact]
@@ -1702,8 +1702,8 @@ namespace Test
         {
             var alfki = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 3 : 1) > 2);
             var alfkiN = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1 : 3) > 2);
-            Assert.NotEqual(null, alfki);
-            Assert.Equal(null, alfkiN);
+            Assert.NotNull(alfki);
+            Assert.Null(alfkiN);
         }
 
         [Fact]
@@ -1712,9 +1712,9 @@ namespace Test
             var alfki = db.Customers.Single(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 3 : 1) >= 2);
             var alfki2 = db.Customers.Single(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 3 : 2) >= 2);
             var alfkiN = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1 : 3) > 2);
-            Assert.NotEqual(null, alfki);
-            Assert.NotEqual(null, alfki2);
-            Assert.Equal(null, alfkiN);
+            Assert.NotNull(alfki);
+            Assert.NotNull(alfki2);
+            Assert.Null(alfkiN);
         }
 
         [Fact]
@@ -1722,8 +1722,8 @@ namespace Test
         {
             var alfki = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1 : 1) == 1);
             var alfkiN = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 1 : 1) == 2);
-            Assert.NotEqual(null, alfki);
-            Assert.Equal(null, alfkiN);
+            Assert.NotNull(alfki);
+            Assert.Null(alfkiN);
         }
 
         [Fact]
@@ -1731,8 +1731,8 @@ namespace Test
         {
             var alfki = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 2 : 2) != 1);
             var alfkiN = db.Customers.SingleOrDefault(c => c.CustomerID == "ALFKI" && (c.CustomerID == "ALFKI" ? 2 : 2) != 2);
-            Assert.NotEqual(null, alfki);
-            Assert.Equal(null, alfkiN);
+            Assert.NotNull(alfki);
+            Assert.Null(alfkiN);
         }
 
         [Fact]
@@ -1824,7 +1824,7 @@ namespace Test
         {
             var custs = db.Customers.Where(c => c.Country == "USA" && c.City.StartsWith("A")).Select(c => c.City).ToList();
             Assert.Equal(2, custs.Count);
-            Assert.Equal(true, custs.All(c => c.StartsWith("A")));
+            Assert.True(custs.All(c => c.StartsWith("A")));
         }
 
         [Fact]
@@ -1846,7 +1846,7 @@ namespace Test
         public void TestEqualLiteralNull()
         {
             var q = db.Customers.Select(c => c.CustomerID == "ALFKI" ? null : c.CustomerID).Where(x => x == null);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NULL"));
+            Assert.Contains("IS NULL", this.GetProvider().GetQueryText(q.Expression));
             var n = q.Count();
             Assert.Equal(1, n);
         }
@@ -1855,7 +1855,7 @@ namespace Test
         public void TestEqualLiteralNullReversed()
         {
             var q = db.Customers.Select(c => c.CustomerID == "ALFKI" ? null : c.CustomerID).Where(x => null == x);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NULL"));
+            Assert.Contains("IS NULL", this.GetProvider().GetQueryText(q.Expression));
             var n = q.Count();
             Assert.Equal(1, n);
         }
@@ -1864,7 +1864,7 @@ namespace Test
         public void TestNotEqualLiteralNull()
         {
             var q = db.Customers.Select(c => c.CustomerID == "ALFKI" ? null : c.CustomerID).Where(x => x != null);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NOT NULL"));
+            Assert.Contains("IS NOT NULL", this.GetProvider().GetQueryText(q.Expression));
             var n = q.Count();
             Assert.Equal(90, n);
         }
@@ -1873,7 +1873,7 @@ namespace Test
         public void TestNotEqualLiteralNullReversed()
         {
             var q = db.Customers.Select(c => c.CustomerID == "ALFKI" ? null : c.CustomerID).Where(x => null != x);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NOT NULL"));
+            Assert.Contains("IS NOT NULL", this.GetProvider().GetQueryText(q.Expression));
             var n = q.Count();
             Assert.Equal(90, n);
         }
@@ -1882,25 +1882,23 @@ namespace Test
         public void TestRelationshipEqualNull()
         {
             var q = db.Orders.Where(o => o.Customer == null);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NULL"));
-            var n = q.Count();
-            Assert.Equal(0, n);
+            Assert.Contains("IS NULL", this.GetProvider().GetQueryText(q.Expression));
+            Assert.Empty(q);
         }
 
         [Fact]
         public void TestRelationshipEqualNullReversed()
         {
             var q = db.Orders.Where(o => null == o.Customer);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NULL"));
-            var n = q.Count();
-            Assert.Equal(0, n);
+            Assert.Contains("IS NULL", this.GetProvider().GetQueryText(q.Expression));
+            Assert.Empty(q);
         }
 
         [Fact]
         public void TestRelationshipNotEqualNull()
         {
             var q = db.Orders.Where(o => o.Customer != null);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NOT NULL"));
+            Assert.Contains("IS NOT NULL", this.GetProvider().GetQueryText(q.Expression));
             var n = q.Count();
             Assert.Equal(830, n);
         }
@@ -1909,7 +1907,7 @@ namespace Test
         public void TestRelationshipNotEqualNullReversed()
         {
             var q = db.Orders.Where(o => null != o.Customer);
-            Assert.Equal(true, this.GetProvider().GetQueryText(q.Expression).Contains("IS NOT NULL"));
+            Assert.Contains("IS NOT NULL", this.GetProvider().GetQueryText(q.Expression));
             var n = q.Count();
             Assert.Equal(830, n);
         }
@@ -1918,7 +1916,7 @@ namespace Test
         public void TestConditionalResultsArePredicates()
         {
             bool value = db.Orders.Where(c => c.CustomerID == "ALFKI").Max(c => (c.CustomerID == "ALFKI" ? string.Compare(c.CustomerID, "POTATO") < 0 : string.Compare(c.CustomerID, "POTATO") > 0));
-            Assert.Equal(true, value);
+            Assert.True(value);
         }
 
         [Fact]
@@ -1986,7 +1984,7 @@ namespace Test
         public void TestAssociationInWhereDeep()
         {
             var q = from d in db.OrderDetails
-                    where d.Order.Customer.CustomerID == "VINET"
+                    where d.Order != null && d.Order.Customer != null && d.Order.Customer.CustomerID == "VINET"
                     select d;
 
             var ods = q.ToList();
@@ -1997,7 +1995,7 @@ namespace Test
         public void TestAssocationInSelectDeep()
         {
             var q = from od in db.OrderDetails
-                    where od.Order != null
+                    where od.Order != null && od.Order.Customer != null
                     select od.Order.Customer.CompanyName;
             var result = q.ToList();
             Assert.Equal(2155, result.Count);
@@ -2007,6 +2005,7 @@ namespace Test
         public void TestAssociationInOrderByDeep()
         {
             var q = from od in db.OrderDetails
+                    where od.Order != null && od.Order.Customer != null
                     orderby od.Order.Customer.CompanyName
                     select od.OrderID;
 
@@ -2031,7 +2030,7 @@ namespace Test
                 select o.Customer
                 ).ToList();
             Assert.Equal(6, custs.Count);
-            Assert.Equal(true, custs.All(c => c.CustomerID == "ALFKI"));
+            Assert.True(custs.All(c => c.CustomerID == "ALFKI"));
         }
 
         [Fact]
@@ -2044,7 +2043,7 @@ namespace Test
                 ).ToList();
 
             Assert.Equal(6, doubleCusts.Count);
-            Assert.Equal(true, doubleCusts.All(c => c.A.CustomerID == "ALFKI" && c.B.CustomerID == "ALFKI"));
+            Assert.True(doubleCusts.All(c => c.A.CustomerID == "ALFKI" && c.B.CustomerID == "ALFKI"));
         }
 
         [Fact]
@@ -2067,9 +2066,9 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(6, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(6, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2081,12 +2080,12 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(6, custs[0].Orders.Count);
-            Assert.Equal(true, custs[0].Orders.Any(o => o.OrderID == 10643));
-            Assert.NotEqual(null, custs[0].Orders.Single(o => o.OrderID == 10643).Details);
-            Assert.Equal(3, custs[0].Orders.Single(o => o.OrderID == 10643).Details.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(6, custs[0].Orders?.Count);
+            Assert.True(custs[0].Orders?.Any(o => o.OrderID == 10643));
+            Assert.NotNull(custs[0].Orders?.Single(o => o.OrderID == 10643).Details);
+            Assert.Equal(3, custs[0].Orders?.Single(o => o.OrderID == 10643)?.Details?.Count);
         }
 
         [Fact]
@@ -2098,9 +2097,9 @@ namespace Test
             NorthwindX nw = new NorthwindX(this.GetProvider().WithPolicy(policy).WithMapping(mapping));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(6, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(6, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2111,9 +2110,9 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(3, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(3, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2124,9 +2123,9 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(6, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(6, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2138,7 +2137,7 @@ namespace Test
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI")
                 .Select(c => new { CustomerID = c.CustomerID, FilteredOrdersCount = c.Orders.Count() }).ToList();
-            Assert.Equal(1, custs.Count);
+            Assert.Single(custs);
             Assert.Equal(3, custs[0].FilteredOrdersCount);
         }
 
@@ -2151,9 +2150,9 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(3, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(3, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2165,9 +2164,9 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(3, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(3, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2177,12 +2176,12 @@ namespace Test
             policy.IncludeWith<Order>(o => o.Details);
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
             var list = nw.Orders.Where(o => o.CustomerID == "ALFKI").GroupBy(o => o.CustomerID).ToList();
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             var grp = list[0].ToList();
             Assert.Equal(6, grp.Count);
             var o10643 = grp.SingleOrDefault(o => o.OrderID == 10643);
-            Assert.NotEqual(null, o10643);
-            Assert.Equal(3, o10643.Details.Count);
+            Assert.NotNull(o10643);
+            Assert.Equal(3, o10643?.Details?.Count);
         }
 
         [Fact]
@@ -2232,7 +2231,7 @@ namespace Test
 
             Assert.Equal(6, list.Count);
             var sorted = list.OrderBy(c => c.ContactName).ToList();
-            Assert.Equal(true, Enumerable.SequenceEqual(list, sorted));
+            Assert.True(Enumerable.SequenceEqual(list, sorted));
         }
 
         [Fact]
@@ -2244,9 +2243,9 @@ namespace Test
             Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
 
             var custs = nw.Customers.Where(c => c.CustomerID == "ALFKI").ToList();
-            Assert.Equal(1, custs.Count);
-            Assert.NotEqual(null, custs[0].Orders);
-            Assert.Equal(3, custs[0].Orders.Count);
+            Assert.Single(custs);
+            Assert.NotNull(custs[0].Orders);
+            Assert.Equal(3, custs[0].Orders?.Count);
         }
 
         [Fact]
@@ -2261,9 +2260,9 @@ namespace Test
                     select o;
 
             Order so = q.Single();
-            Assert.Equal(3, so.Details.Count);
+            Assert.Equal(3, so.Details?.Count);
             Order fo = q.First();
-            Assert.Equal(3, fo.Details.Count);
+            Assert.Equal(3, fo.Details?.Count);
         }
     }
 }

@@ -6,9 +6,9 @@ namespace Test
     public class MultiTableEntity
     {
         public int ID;
-        public string Value1;
-        public string Value2;
-        public string Value3;
+        public string? Value1;
+        public string? Value2;
+        public string? Value3;
     }
 
     public class MultiTableContext

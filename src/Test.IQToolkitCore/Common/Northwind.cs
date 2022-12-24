@@ -4,32 +4,32 @@
 namespace Test
 {
 
-    public class Customer
+    public record Customer
     {
-        public string CustomerID;
-        public string ContactName;
-        public string CompanyName;
-        public string Phone;
-        public string City;
-        public string Country;
-        public IList<Order> Orders;
+        public string CustomerID = default!;
+        public string ContactName = default!;
+        public string CompanyName = default!;
+        public string Phone = default!;
+        public string City = default!;
+        public string Country = default!;
+        public IList<Order>? Orders;
     }
 
-    public class Order
+    public record Order
     {
-        public int OrderID;
-        public string CustomerID;
-        public DateTime OrderDate;
-        public Customer Customer;
-        public List<OrderDetail> Details;
+        public int OrderID = default!;
+        public string CustomerID = default!;
+        public DateTime OrderDate = default!;
+        public Customer Customer = default!;
+        public List<OrderDetail>? Details;
     }
 
-    public class OrderDetail
+    public record OrderDetail
     {
-        public int? OrderID { get; set; }
-        public int ProductID { get; set; }
-        public Product Product;
-        public Order Order;
+        public int OrderID = default;
+        public int ProductID = default;
+        public Product? Product;
+        public Order? Order;
     }
 
     public interface IEntity
@@ -37,33 +37,33 @@ namespace Test
         int ID { get; }
     }
 
-    public class Product : IEntity
+    public record Product : IEntity
     {
-        public int ID;
-        public string ProductName;
-        public bool Discontinued;
+        public int ID { get; } = default;
+        public string ProductName = default!;
+        public bool Discontinued = default!;
 
-        int IEntity.ID
-        {
-            get { return this.ID; }
-        }
+        //int IEntity.ID
+        //{
+        //    get { return this.ID; }
+        //}
     }
 
-    public class Employee
+    public record Employee
     {
-        public int EmployeeID;
-        public string LastName;
-        public string FirstName;
-        public string Title;
-        public Address Address;
+        public int EmployeeID = default;
+        public string LastName = default!;
+        public string FirstName = default!;
+        public string Title = default!;
+        public Address? Address;
     }
 
-    public class Address
+    public record Address
     {
-        public string Street { get; private set; }
-        public string City { get; private set; }
-        public string Region { get; private set; }
-        public string PostalCode { get; private set; }
+        public string Street { get; private set; } = default!;
+        public string City { get; private set; } = default!;
+        public string Region { get; private set; } = default!;
+        public string PostalCode { get; private set; } = default!;
 
         public Address(string street, string city, string region, string postalCode)
         {
@@ -189,7 +189,7 @@ namespace Test
 
     public class NorthwindSession : INorthwindSession
     {
-        IEntitySession session;
+        readonly IEntitySession session;
 
         public NorthwindSession(EntityProvider provider)
             : this(new EntitySession(provider))
@@ -267,7 +267,7 @@ namespace Test
 
     public class NorthwindX
     {
-        EntityProvider provider;
+        readonly EntityProvider provider;
 
         public NorthwindX(EntityProvider provider)
         {

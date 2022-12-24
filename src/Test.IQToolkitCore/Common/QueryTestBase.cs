@@ -6,14 +6,14 @@ namespace Test
 
     public abstract class QueryTestBase : IDisposable
     {
-        private bool executeQueries;
+        private readonly bool executeQueries;
 
-        private Dictionary<string, string> baselines;
-        private XmlTextWriter baselineWriter;
-        private string baselineKey;
-        private string queryText;
+        private Dictionary<string, string>? baselines;
+        private readonly XmlTextWriter? baselineWriter;
+        private readonly string? baselineKey;
+        private string? queryText;
 
-        private DbEntityProvider provider;
+        private readonly DbEntityProvider provider;
 
         
 
@@ -37,7 +37,7 @@ namespace Test
             this.executeQueries = this.ExecuteQueries();
 
             var baseLineFilePath = this.GetBaseLineFilePath();
-            string newBaseLineFilePath = baseLineFilePath != null ? baseLineFilePath + ".new" : null;
+            string? newBaseLineFilePath = baseLineFilePath != null ? baseLineFilePath + ".new" : null;
 
             if (!string.IsNullOrEmpty(baseLineFilePath))
             {
@@ -54,7 +54,7 @@ namespace Test
             }
         }
 
-        public virtual string GetBaseLineFilePath()
+        public virtual string? GetBaseLineFilePath()
         {
             return null;
         }
@@ -69,7 +69,11 @@ namespace Test
             if (!string.IsNullOrEmpty(filename) && File.Exists(filename))
             {
                 XDocument doc = XDocument.Load(filename);
-                this.baselines = doc.Root.Elements("baseline").ToDictionary(e => (string)e.Attribute("key"), e => e.Value);
+                var baseline = doc.Root?.Elements("baseline");
+                if (baseline != null)
+                {
+                    this.baselines = baseline.ToDictionary(e => (string)e.Attribute("key"), e => e.Value);
+                }
             }
         }
 
@@ -85,7 +89,7 @@ namespace Test
                     // prefix of the provider type xxxQueryProvider
                     || string.Compare(this.provider.GetType().Name, exclude.Provider + "QueryProvider", StringComparison.OrdinalIgnoreCase) == 0
                     // last name of the namespace
-                    || string.Compare(this.provider.GetType().Namespace.Split(new[] { '.' }).Last(), exclude.Provider, StringComparison.OrdinalIgnoreCase) == 0
+                    || string.Compare(this.provider.GetType().Namespace?.Split(new[] { '.' }).Last(), exclude.Provider, StringComparison.OrdinalIgnoreCase) == 0
                     )
                 {
                     return false;
@@ -121,7 +125,7 @@ namespace Test
             TestQuery((EntityProvider)query.Provider, query.Expression, false);
         }
 
-        protected void TestQuery(Expression<Func<object>> query)
+        protected void TestQuery(Expression<Func<object?>> query)
         {
             TestQuery(this.provider, query.Body, false);
         }
@@ -131,7 +135,7 @@ namespace Test
             TestQuery((EntityProvider)query.Provider, query.Expression, true);
         }
 
-        protected void TestQueryFails(Expression<Func<object>> query)
+        protected void TestQueryFails(Expression<Func<object?>> query)
         {
             TestQuery(this.provider, query.Body, true);
         }
@@ -143,18 +147,17 @@ namespace Test
                 query = ((UnaryExpression)query).Operand; // remove box
             }
 
-            this.queryText = null;
+            // this.queryText = null;
             this.queryText = pro.GetQueryText(query);
             WriteBaseline(baselineKey, queryText);
 
             if (this.executeQueries)
             {
-                Exception caught = null;
+                Exception? caught = null;
                 try
                 {
                     object result = pro.Execute(query);
-                    IEnumerable seq = result as IEnumerable;
-                    if (seq != null)
+                    if (result is IEnumerable seq)
                     {
                         // iterate results
                         foreach (var item in seq)
@@ -163,8 +166,7 @@ namespace Test
                     }
                     else
                     {
-                        IDisposable disposable = result as IDisposable;
-                        if (disposable != null)
+                        if (result is IDisposable disposable)
                             disposable.Dispose();
                     }
                 }
@@ -184,7 +186,7 @@ namespace Test
                 }
             }
 
-            string baseline = null;
+            string? baseline = null;
             if (this.baselines != null && this.baselines.TryGetValue(this.baselineKey, out baseline))
             {
                 string trimAct = TrimExtraWhiteSpace(queryText).Trim();
@@ -232,31 +234,31 @@ namespace Test
             return sb.ToString();
         }
 
-        private void WriteDifferences(string s1, string s2)
-        {
-            int start = 0;
-            bool same = true;
-            for (int i = 0, n = Math.Min(s1.Length, s2.Length); i < n; i++)
-            {
-                bool matches = s1[i] == s2[i];
-                if (matches != same)
-                {
-                    if (i > start)
-                    {
-                        Console.ForegroundColor = same ? ConsoleColor.Gray : ConsoleColor.White;
-                        Console.Write(s1.Substring(start, i - start));
-                    }
-                    start = i;
-                    same = matches;
-                }
-            }
-            if (start < s1.Length)
-            {
-                Console.ForegroundColor = same ? ConsoleColor.Gray : ConsoleColor.White;
-                Console.Write(s1.Substring(start));
-            }
-            Console.WriteLine();
-        }
+        //private void WriteDifferences(string s1, string s2)
+        //{
+        //    int start = 0;
+        //    bool same = true;
+        //    for (int i = 0, n = Math.Min(s1.Length, s2.Length); i < n; i++)
+        //    {
+        //        bool matches = s1[i] == s2[i];
+        //        if (matches != same)
+        //        {
+        //            if (i > start)
+        //            {
+        //                Console.ForegroundColor = same ? ConsoleColor.Gray : ConsoleColor.White;
+        //                Console.Write(s1.Substring(start, i - start));
+        //            }
+        //            start = i;
+        //            same = matches;
+        //        }
+        //    }
+        //    if (start < s1.Length)
+        //    {
+        //        Console.ForegroundColor = same ? ConsoleColor.Gray : ConsoleColor.White;
+        //        Console.Write(s1.Substring(start));
+        //    }
+        //    Console.WriteLine();
+        //}
 
         protected bool ExecSilent(string commandText)
         {
@@ -265,9 +267,9 @@ namespace Test
                 this.provider.ExecuteCommand(commandText);
                 return true;
             }
-            catch (Exception e)
+            catch// (Exception e)
             {
-                var msg = e.Message;
+                //var msg = e.Message;
                 return false;
             }
         }

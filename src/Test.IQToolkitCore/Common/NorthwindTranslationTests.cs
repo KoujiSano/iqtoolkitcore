@@ -32,7 +32,7 @@ namespace Test
 
         public void TestCompareEntityEqual()
         {
-            Customer alfki = new Customer { CustomerID = "ALFKI" };
+            Customer alfki = new() { CustomerID = "ALFKI" };
             TestQuery(
                 db.Customers.Where(c => c == alfki)
                 );
@@ -40,7 +40,7 @@ namespace Test
 
         public void TestCompareEntityNotEqual()
         {
-            Customer alfki = new Customer { CustomerID = "ALFKI" };
+            Customer alfki = new() { CustomerID = "ALFKI" };
             TestQuery(
                 db.Customers.Where(c => c != alfki)
                 );
@@ -159,7 +159,7 @@ namespace Test
 
         public void TestSelectConstantNullString()
         {
-            TestQuery(db.Customers.Select(c => (string)null));
+            TestQuery(db.Customers.Select(c => (string?)null));
         }
 
         public void TestSelectLocal()
@@ -1557,7 +1557,7 @@ namespace Test
         {
             var policy = new EntityPolicy();
             policy.IncludeWith<Customer>(c => c.Orders);
-            Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
+            Northwind nw = new(this.GetProvider().WithPolicy(policy));
 
             TestQuery(
                 nw.Customers
@@ -1568,7 +1568,7 @@ namespace Test
         {
             var policy = new EntityPolicy();
             policy.IncludeWith<Customer>(c => c.Orders, true);
-            Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
+            Northwind nw = new(this.GetProvider().WithPolicy(policy));
 
             TestQuery(
                 nw.Customers
@@ -1580,7 +1580,7 @@ namespace Test
             var mapping = new AttributeMapping(typeof(NorthwindX));
             var policy = new EntityPolicy();
             policy.IncludeWith<CustomerX>(c => c.Orders);
-            NorthwindX nw = new NorthwindX(this.GetProvider().WithPolicy(policy).WithMapping(mapping));
+            NorthwindX nw = new(this.GetProvider().WithPolicy(policy).WithMapping(mapping));
 
             TestQuery(
                 nw.Customers
@@ -1591,7 +1591,7 @@ namespace Test
         {
             var policy = new EntityPolicy();
             policy.IncludeWith<Customer>(c => c.Orders);
-            Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
+            Northwind nw = new(this.GetProvider().WithPolicy(policy));
 
             TestQuery(
                 from c in nw.Customers
@@ -1605,7 +1605,7 @@ namespace Test
             var policy = new EntityPolicy();
             policy.IncludeWith<Customer>(c => c.Orders);
             policy.IncludeWith<Order>(o => o.Details);
-            Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
+            Northwind nw = new(this.GetProvider().WithPolicy(policy));
 
             TestQuery(
                 nw.Customers
@@ -1617,7 +1617,7 @@ namespace Test
             var policy = new EntityPolicy();
             policy.IncludeWith<Customer>(c => c.Orders);
             policy.IncludeWith<Order>(o => o.Details);
-            Northwind nw = new Northwind(this.GetProvider().WithPolicy(policy));
+            Northwind nw = new(this.GetProvider().WithPolicy(policy));
 
             TestQuery(
                 from c in nw.Customers
@@ -1671,7 +1671,7 @@ namespace Test
 
         public void TestContainsWithEmptyLocalList()
         {
-            var ids = new string[0];
+            var ids = Array.Empty<string>();
             TestQuery(
                 from c in db.Customers
                 where ids.Contains(c.CustomerID)

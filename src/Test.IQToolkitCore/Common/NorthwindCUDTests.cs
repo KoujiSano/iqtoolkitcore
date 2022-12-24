@@ -71,7 +71,7 @@
                 });
             var results = db.Customers.Batch(custs, (u, c) => u.Insert(c));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -89,7 +89,7 @@
                 });
             var results = db.Customers.Batch(custs, (u, c) => u.Insert(c, d => d.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, "Seattle")));
+            Assert.True(results.All(r => object.Equals(r, "Seattle")));
         }
 
         [Fact]
@@ -210,7 +210,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.Update(c));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -242,7 +242,7 @@
 
             var results = db.Customers.Batch(pairs, (u, x) => u.Update(x.current, d => d.City == x.original.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -263,7 +263,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.Update(c, null, d => d.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
+            Assert.True(results.All(r => object.Equals(r, "Portland")));
         }
 
         [Fact]
@@ -295,7 +295,7 @@
 
             var results = db.Customers.Batch(pairs, (u, x) => u.Update(x.current, d => d.City == x.original.City, d => d.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
+            Assert.True(results.All(r => object.Equals(r, "Portland")));
         }
 
         [Fact]
@@ -416,7 +416,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.InsertOrUpdate(c));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -437,7 +437,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.InsertOrUpdate(c));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -456,7 +456,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.InsertOrUpdate(c, null, d => d.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
+            Assert.True(results.All(r => object.Equals(r, "Portland")));
         }
 
         [Fact]
@@ -477,7 +477,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.InsertOrUpdate(c, null, d => d.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
+            Assert.True(results.All(r => object.Equals(r, "Portland")));
         }
 
         [Fact]
@@ -507,7 +507,7 @@
 
             var results = db.Customers.Batch(pairs, (u, x) => u.InsertOrUpdate(x.current, d => d.City == x.original.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -539,7 +539,7 @@
 
             var results = db.Customers.Batch(pairs, (u, x) => u.InsertOrUpdate(x.current, d => d.City == x.original.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -632,7 +632,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.Delete(c));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -653,7 +653,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.Delete(c, d => d.City == c.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 1)));
+            Assert.True(results.All(r => object.Equals(r, 1)));
         }
 
         [Fact]
@@ -674,7 +674,7 @@
 
             var results = db.Customers.Batch(custs, (u, c) => u.Delete(c, d => d.City == c.City));
             Assert.Equal(n, results.Count());
-            Assert.Equal(true, results.All(r => object.Equals(r, 0)));
+            Assert.True(results.All(r => object.Equals(r, 0)));
         }
 
         [Fact]
@@ -689,29 +689,29 @@
         [Fact]
         public void TestSessionIdentityCache()
         {
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+            NorthwindSession ns = new(this.GetProvider());
 
             // both objects should be the same instance
             var cust = ns.Customers.Single(c => c.CustomerID == "ALFKI");
             var cust2 = ns.Customers.Single(c => c.CustomerID == "ALFKI");
 
-            Assert.NotEqual(null, cust);
-            Assert.NotEqual(null, cust2);
+            Assert.NotNull(cust);
+            Assert.NotNull(cust2);
             Assert.Equal(cust, cust2);
         }
 
         [Fact]
         public void TestSessionProviderNotIdentityCached()
         {
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
-            Northwind db2 = new Northwind(ns.Session.Provider);
+            NorthwindSession ns = new(this.GetProvider());
+            Northwind db2 = new(ns.Session.Provider);
 
             // both objects should be different instances
             var cust = ns.Customers.Single(c => c.CustomerID == "ALFKI");
             var cust2 = ns.Customers.Table.Single(c => c.CustomerID == "ALFKI");
 
-            Assert.NotEqual(null, cust);
-            Assert.NotEqual(null, cust2);
+            Assert.NotNull(cust);
+            Assert.NotNull(cust2);
             Assert.Equal(cust.CustomerID, cust2.CustomerID);
             Assert.NotEqual(cust, cust2);
         }
@@ -755,7 +755,7 @@
         [Fact]
         public void TestSessionSubmitActionOnInsert()
         {
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+            NorthwindSession ns = new(this.GetProvider());
             var cust = new Customer
             {
                 CustomerID = "XX1",
@@ -779,7 +779,7 @@
         [Fact]
         public void TestSessionSubmitActionOnInsertOrUpdate()
         {
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+            NorthwindSession ns = new(this.GetProvider());
             var cust = new Customer
             {
                 CustomerID = "XX1",
@@ -813,7 +813,7 @@
             };
             this.db.Customers.Insert(cust);
 
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+            NorthwindSession ns = new(this.GetProvider());
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust));
 
             ns.Customers.UpdateOnSubmit(cust);
@@ -876,7 +876,7 @@
 
             this.db.Customers.Insert(cust);
 
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+            NorthwindSession ns = new(this.GetProvider());
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust));
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust2));
 
@@ -924,7 +924,7 @@
 
             this.db.Customers.Insert(cust);
 
-            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+            NorthwindSession ns = new(this.GetProvider());
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust));
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust2));
 

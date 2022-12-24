@@ -13,15 +13,15 @@ namespace Test
         class Basic_AttributesOnEntity
         {
             [Table(Name ="Customers")]
-            public class Customer
+            public record Customer
             {
                 [Column(Name ="CustomerID")]
-                public string ID;
+                public string ID = default!;
 
                 [Column(Name ="ContactName")]
-                public string Name;
+                public string Name = default!;
 
-                public string Phone;
+                public string Phone = default!;
             }
         }
 
@@ -34,9 +34,9 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
 
@@ -55,11 +55,11 @@ namespace Test
                 string Phone { get; set; }
             }
 
-            public class RuntimeCustomer : ICustomer
+            public record RuntimeCustomer : ICustomer
             {
-                public string ID { get; set; }
-                public string Name { get; set; }
-                public string Phone { get; set; }
+                public string ID { get; set; } = default!;
+                public string Name { get; set; } = default!;
+                public string Phone { get; set; } = default!;
             }
         }
 
@@ -72,19 +72,19 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
 
         class Basic_AttributesOnContext
         {
-            public class Customer
+            public record Customer
             {
-                public string ID;
-                public string Name;
-                public string Phone;
+                public string ID = default!;
+                public string Name = default!;
+                public string Phone = default!;
             }
 
             public abstract class Context
@@ -105,20 +105,20 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
 
         
         class Basic_AttributesOnContext_TableNameInferred
         {
-            public class Customer
+            public record Customer
             {
-                public string ID;
-                public string Name;
-                public string Phone;
+                public string ID = default!;
+                public string Name = default!;
+                public string Phone = default!;
             }
 
             public abstract class Context
@@ -139,9 +139,9 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
 
@@ -154,11 +154,11 @@ namespace Test
                 string Phone { get; set; }
             }
 
-            public class RuntimeCustomer : ICustomer
+            public record RuntimeCustomer : ICustomer
             {
-                public string ID { get; set; }
-                public string Name { get; set; }
-                public string Phone { get; set; }
+                public string ID { get; set; } = default!;
+                public string Name { get; set; } = default!;
+                public string Phone { get; set; } = default!;
             }
 
             public abstract class Context
@@ -180,19 +180,19 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
 
         class Basic_XmlMapped
         {
-            public class Customer
+            public record Customer
             {
-                public string ID;
-                public string Name;
-                public string Phone;
+                public string ID = default!;
+                public string Name = default!;
+                public string Phone = default!;
             }
 
             public static string Xml = @"
@@ -215,9 +215,9 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
 
@@ -230,11 +230,11 @@ namespace Test
                 string Phone { get; set; }
             }
 
-            public class RuntimeCustomer : ICustomer
+            public record RuntimeCustomer : ICustomer
             {
-                public string ID { get; set; }
-                public string Name { get; set; }
-                public string Phone { get; set; }
+                public string ID { get; set; } = default!;
+                public string Name { get; set; } = default!;
+                public string Phone { get; set; } = default!;
             }
 
             public static string Xml = @"
@@ -258,9 +258,9 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Phone);
             }
         }
         #endregion
@@ -271,21 +271,21 @@ namespace Test
         class Association_AttributesOnEntity
         {
             [Table(Name = "Customers")]
-            public class Customer
+            public record Customer
             {
-                public string CustomerID;
-                public string ContactName;
-                public string Phone;
+                public string CustomerID = default!;
+                public string ContactName = default!;
+                public string Phone = default!;
 
                 [Association(KeyMembers=nameof(CustomerID))]
-                public List<Order> Orders = new List<Order>();
+                public List<Order> Orders = new();
             }
 
             [Table(Name ="Orders")]
-            public class Order
+            public record Order
             {
-                public int? OrderID;
-                public string? CustomerID;
+                public int OrderID = default;
+                public string CustomerID = default!;
 
                 [Association(KeyMembers=nameof(CustomerID))]
                 public Customer? Customer;
@@ -303,11 +303,11 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.NotEqual(null, item.ContactName);
-                Assert.NotEqual(null, item.Phone);
-                Assert.NotEqual(null, item.Orders);
-                Assert.Equal(0, item.Orders.Count); // not retrieved, no policy
+                Assert.NotNull(item.CustomerID);
+                Assert.NotNull(item.ContactName);
+                Assert.NotNull(item.Phone);
+                Assert.NotNull(item.Orders);
+                Assert.Empty(item.Orders); // not retrieved, no policy
             }
         }
 
@@ -315,15 +315,15 @@ namespace Test
         {
             var provider = this.GetProvider().WithMapping(new AttributeMapping());
             var items = provider.GetTable<Association_AttributesOnEntity.Order>()
-                .Where(o => o.Customer.ContactName.StartsWith("Maria"))
+                .Where(o => o.Customer != null && o.Customer.ContactName.StartsWith("Maria"))
                 .ToList();
 
             Assert.Equal(25, items.Count);
 
             foreach (var item in items)
             {
-                Assert.NotNull(item.OrderID);
-                Assert.NotNull(item.CustomerID);
+                Assert.NotEqual(0, item.OrderID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
                 Assert.Null(item.Customer); // not retrieved, no policy
             }
         }
@@ -331,23 +331,23 @@ namespace Test
         class Association_AttributesOnEntity_DifferentKeys
         {
             [Table(Name = "Customers")]
-            public class Customer
+            public record Customer
             {
                 [Column(Name ="CustomerID")]
-                public string ID;
-                public string ContactName;
-                public string Phone;
+                public string ID = default!;
+                public string ContactName = default!;
+                public string Phone = default!;
 
                 [Association(KeyMembers = nameof(ID), RelatedKeyMembers = nameof(Order.CustomerID))]
-                public List<Order> Orders = new List<Order>();
+                public List<Order> Orders = new();
             }
 
             [Table(Name = "Orders")]
-            public class Order
+            public record Order
             {
                 [Column(Name ="OrderID")]
-                public int? ID;
-                public string? CustomerID;
+                public int ID = default;
+                public string CustomerID = default!;
 
                 [Association(KeyMembers = nameof(CustomerID), RelatedKeyMembers = nameof(Association_AttributesOnEntity_DifferentKeys.Customer.ID))]
                 public Customer? Customer;
@@ -365,11 +365,11 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.ContactName);
-                Assert.NotEqual(null, item.Phone);
-                Assert.NotEqual(null, item.Orders);
-                Assert.Equal(0, item.Orders.Count);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.ContactName);
+                Assert.NotNull(item.Phone);
+                Assert.NotNull(item.Orders);
+                Assert.Empty(item.Orders);
             }
         }
 
@@ -377,16 +377,16 @@ namespace Test
         {
             var provider = this.GetProvider().WithMapping(new AttributeMapping());
             var items = provider.GetTable<Association_AttributesOnEntity_DifferentKeys.Order>()
-                .Where(o => o.Customer.ContactName.StartsWith("Maria"))
+                .Where(o => o.Customer != null && o.Customer.ContactName.StartsWith("Maria"))
                 .ToList();
 
             Assert.Equal(25, items.Count);
 
             foreach (var item in items)
             {
-                Assert.NotNull(item.ID);
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.Equal(null, item.Customer); // not retrieved, no policy
+                Assert.NotEqual(0, item.ID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
+                Assert.Null(item.Customer); // not retrieved, no policy
             }
         }
         #endregion
@@ -394,19 +394,19 @@ namespace Test
         #region Mapping attributes on context
         class Association_AttributesOnContext
         {
-            public class Customer
+            public record Customer
             {
-                public string? CustomerID;
-                public string? ContactName;
-                public string? Phone;
+                public string CustomerID = default!;
+                public string ContactName = default!;
+                public string Phone = default!;
 
-                public List<Order> Orders = new List<Order>();
+                public List<Order> Orders = new();
             }
 
-            public class Order
+            public record Order
             {
-                public int? OrderID;
-                public string? CustomerID;
+                public int OrderID = default;
+                public string CustomerID = default!;
                 public Customer? Customer;
             }
 
@@ -433,11 +433,11 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.NotEqual(null, item.ContactName);
-                Assert.NotEqual(null, item.Phone);
-                Assert.NotEqual(null, item.Orders);
-                Assert.Equal(0, item.Orders.Count); // not retrieved, no policy
+                Assert.NotNull(item.CustomerID);
+                Assert.NotNull(item.ContactName);
+                Assert.NotNull(item.Phone);
+                Assert.NotNull(item.Orders);
+                Assert.Empty(item.Orders); // not retrieved, no policy
             }
         }
 
@@ -445,16 +445,16 @@ namespace Test
         {
             var provider = this.GetProvider().WithMapping(new AttributeMapping(typeof(Association_AttributesOnContext.Context)));
             var items = provider.GetTable<Association_AttributesOnContext.Order>()
-                .Where(o => o.Customer.ContactName.StartsWith("Maria"))
+                .Where(o => o.Customer != null && o.Customer.ContactName.StartsWith("Maria"))
                 .ToList();
 
             Assert.Equal(25, items.Count);
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.OrderID);
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.Equal(null, item.Customer); // not retrieved, no policy
+                Assert.NotEqual(0, item.OrderID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
+                Assert.Null(item.Customer); // not retrieved, no policy
             }
         }
         #endregion
@@ -462,12 +462,12 @@ namespace Test
         #region Mapping in XML
         class Association_XmlMapping
         {
-            public class Customer
+            public record Customer
             {
-                public string? CustomerID;
-                public string? ContactName;
-                public string? Phone;
-                public List<Order> Orders = new List<Order>();
+                public string CustomerID = default!;
+                public string ContactName = default!;
+                public string Phone = default!;
+                public List<Order> Orders = new();
             }
 
             public class Order
@@ -504,11 +504,11 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.NotEqual(null, item.ContactName);
-                Assert.NotEqual(null, item.Phone);
-                Assert.NotEqual(null, item.Orders);
-                Assert.Equal(0, item.Orders.Count); // not retrieved, no policy
+                Assert.NotNull(item.CustomerID);
+                Assert.NotNull(item.ContactName);
+                Assert.NotNull(item.Phone);
+                Assert.NotNull(item.Orders);
+                Assert.Empty(item.Orders); // not retrieved, no policy
             }
         }
 
@@ -518,7 +518,7 @@ namespace Test
                 XmlMapping.FromXml(Association_XmlMapping.Xml, typeof(Association_XmlMapping.Customer).Assembly));
 
             var items = provider.GetTable<Association_XmlMapping.Order>()
-                .Where(o => o.Customer.ContactName.StartsWith("Maria"))
+                .Where(o => o.Customer != null && o.Customer.ContactName.StartsWith("Maria"))
                 .ToList();
 
             Assert.Equal(25, items.Count);
@@ -526,25 +526,25 @@ namespace Test
             foreach (var item in items)
             {
                 Assert.Null(item.OrderID);
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.Equal(null, item.Customer); // not retrieved, no policy
+                Assert.NotNull(item.CustomerID);
+                Assert.Null(item.Customer); // not retrieved, no policy
             }
         }
 
         class Association_XmlMapping_DifferentKeys
         {
-            public class Customer
+            public record Customer
             {
-                public string ID;
-                public string ContactName;
-                public string Phone;
-                public List<Order> Orders = new List<Order>();
+                public string ID = default!;
+                public string ContactName = default!;
+                public string Phone = default!;
+                public List<Order> Orders = new();
             }
 
             public class Order
             {
-                public int? ID;
-                public string? CustomerID;
+                public int ID = default;
+                public string CustomerID = default!;
                 public Customer? Customer;
             }
 
@@ -577,11 +577,11 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.ID);
-                Assert.NotEqual(null, item.ContactName);
-                Assert.NotEqual(null, item.Phone);
-                Assert.NotEqual(null, item.Orders);
-                Assert.Equal(0, item.Orders.Count);
+                Assert.NotNull(item.ID);
+                Assert.NotNull(item.ContactName);
+                Assert.NotNull(item.Phone);
+                Assert.NotNull(item.Orders);
+                Assert.Empty(item.Orders);
             }
         }
 
@@ -591,16 +591,16 @@ namespace Test
                 XmlMapping.FromXml(Association_XmlMapping_DifferentKeys.Xml, typeof(Association_XmlMapping_DifferentKeys.Customer).Assembly));
 
             var items = provider.GetTable<Association_XmlMapping_DifferentKeys.Order>()
-                .Where(o => o.Customer.ContactName.StartsWith("Maria"))
+                .Where(o =>o.Customer != null && o.Customer.ContactName.StartsWith("Maria"))
                 .ToList();
 
             Assert.Equal(25, items.Count);
 
             foreach (var item in items)
             {
-                Assert.Null(item.ID);
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.Equal(null, item.Customer); // not retrieved, no policy
+                Assert.NotEqual(0, item.ID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
+                Assert.Null(item.Customer); // not retrieved, no policy
             }
         }
 
@@ -612,24 +612,24 @@ namespace Test
         class Nested_AttributesDistributed
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public string LastName;
-                public string FirstName;
-                public string Title;
+                public int EmployeeID = default;
+                public string LastName = default!;
+                public string FirstName = default!;
+                public string Title = default!; 
 
                 [NestedEntity]
-                public Address Address;
+                public Address? Address;
             }
 
-            public class Address
+            public record Address
             {
                 [Column(Name = "Address")]
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -642,30 +642,30 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesDistributed_NoNestedEntity
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public string LastName;
-                public string FirstName;
-                public string Title;
-                public Address Address;
+                public int EmployeeID = default;
+                public string LastName = default!;
+                public string FirstName = default!;
+                public string Title = default!;
+                public Address? Address;
             }
 
-            public class Address
+            public record Address
             {
                 [Column(Name = "Address")]
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -678,43 +678,43 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesDistributed_MultipleNestedEntities
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
+                public int EmployeeID = default;
 
                 [NestedEntity]
-                public Name Name;
+                public Name Name = default!;
 
                 [NestedEntity]
-                public Address Address;
+                public Address Address = default!;
             }
 
-            public class Name
+            public record Name
             {
                 [Column(Name = "LastName")]
-                public string Last;
+                public string Last = default!;
 
                 [Column(Name = "FirstName")]
-                public string First;
+                public string First = default!;
 
-                public string Title;
+                public string Title = default!;
             }
 
-            public class Address
+            public record Address
             {
                 [Column(Name = "Address")]
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -727,50 +727,50 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Name.First);
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Name.First);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesDistributed_DeeplyNested
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
+                public int EmployeeID = default;
 
                 [NestedEntity]
-                public Person Person;
+                public Person? Person;
 
                 [NestedEntity]
-                public Address Address;
+                public Address? Address;
             }
 
-            public class Person
+            public record Person
             {
                 [NestedEntity]
-                public Name Name;
-                public string Title;
+                public Name? Name;
+                public string Title = default!;
             }
 
-            public class Name
+            public record Name
             {
                 [Column(Name = "LastName")]
-                public string Last;
+                public string Last = default!;
 
                 [Column(Name = "FirstName")]
-                public string First;
+                public string First = default!;
             }
 
-            public class Address
+            public record Address
             {
                 [Column(Name = "Address")]
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -783,36 +783,36 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Person);
-                Assert.NotEqual(null, item.Person.Title);
-                Assert.NotEqual(null, item.Person.Name);
-                Assert.NotEqual(null, item.Person.Name.First);
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Person);
+                Assert.NotNull(item.Person.Title);
+                Assert.NotNull(item.Person.Name);
+                Assert.NotNull(item.Person.Name.First);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesAtRoot
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public string LastName;
-                public string FirstName;
-                public string Title;
+                public int EmployeeID = default;
+                public string LastName = default!;
+                public string FirstName = default!;
+                public string Title = default!;
 
                 [NestedEntity]
                 [Column(Member = "Address.Street", Name = "Address")]
-                public Address Address;
+                public Address? Address;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -825,32 +825,32 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesAtRoot_PartialPath
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public string LastName;
-                public string FirstName;
-                public string Title;
+                public int EmployeeID = default;
+                public string LastName = default!;
+                public string FirstName = default!;
+                public string Title = default!;
 
                 [NestedEntity]
                 [Column(Member = "Street", Name = "Address")]
-                public Address Address;
+                public Address? Address;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -863,41 +863,41 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesAtRoot_MultipleNestedEntities
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
+                public int EmployeeID = default;
 
                 [NestedEntity]
                 [Column(Member = "Last", Name = "LastName")]
                 [Column(Member = "Name.First", Name = "FirstName")]
-                public Name Name;
+                public Name? Name;
 
                 [NestedEntity]
                 [Column(Member = "Address.Street", Name = "Address")]
-                public Address Address;
+                public Address? Address;
             }
 
-            public class Name
+            public record Name
             {
-                public string Last;
-                public string First;
-                public string Title;
+                public string Last = default!;
+                public string First = default!;
+                public string Title = default!;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -910,49 +910,49 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Name.First);
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Name);
+                Assert.NotNull(item.Name.First);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesAtRoot_DeeplyNested
         {
             [Table(Name = "Employees")]
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
+                public int EmployeeID = default;
 
                 [NestedEntity]
                 [Column(Member = "Person.Name.Last", Name = "LastName")]
                 [Column(Member = "Name.First", Name = "FirstName")]
-                public Person Person;
+                public Person? Person;
 
                 [NestedEntity]
                 [Column(Member = "Street", Name = "Address")]
-                public Address Address;
+                public Address? Address;
             }
 
-            public class Person
+            public record Person
             {
                 [NestedEntity]
-                public Name Name;
-                public string Title;
+                public Name? Name;
+                public string Title = default!;
             }
 
-            public class Name
+            public record Name
             {
-                public string Last;
-                public string First;
+                public string Last = default!;
+                public string First = default!;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
         }
 
@@ -965,32 +965,32 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Person);
-                Assert.NotEqual(null, item.Person.Title);
-                Assert.NotEqual(null, item.Person.Name);
-                Assert.NotEqual(null, item.Person.Name.First);
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Person);
+                Assert.NotNull(item.Person.Title);
+                Assert.NotNull(item.Person.Name);
+                Assert.NotNull(item.Person.Name.First);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesOnContext
         {
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public string Last;
-                public string First;
-                public string Title;
-                public Address Address;
+                public int EmployeeID = default;
+                public string Last = default!;
+                public string First = default!;
+                public string Title = default!;
+                public Address? Address;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
 
             public abstract class Context
@@ -1012,38 +1012,38 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_AttributesOnContext_DeeplyNested
         {
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public Person Person;
-                public Address Address;
+                public int EmployeeID = default;
+                public Person? Person;
+                public Address? Address;
             }
 
-            public class Person
+            public record Person
             {
-                public Name Name;
-                public string Title;
+                public Name? Name;
+                public string Title = default!;
             }
 
-            public class Name
+            public record Name
             {
-                public string Last;
-                public string First;
+                public string Last = default!;
+                public string First = default!;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
 
             public abstract class Context
@@ -1065,32 +1065,32 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Person);
-                Assert.NotEqual(null, item.Person.Title);
-                Assert.NotEqual(null, item.Person.Name);
-                Assert.NotEqual(null, item.Person.Name.First);
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Person);
+                Assert.NotNull(item.Person.Title);
+                Assert.NotNull(item.Person.Name);
+                Assert.NotNull(item.Person.Name.First);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_XmlMapped
         {
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public string LastName;
-                public string FirstName;
-                public string Title;
-                public Address Address;
+                public int EmployeeID = default;
+                public string LastName = default!;
+                public string FirstName = default!;
+                public string Title = default!;
+                public Address? Address;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
 
             public static string Xml = @"
@@ -1114,38 +1114,38 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
         class Nested_XmlMapped_DeeplyNested
         {
-            public class Employee
+            public record Employee
             {
-                public int EmployeeID;
-                public Person Person;
-                public Address Address;
+                public int EmployeeID = default;
+                public Person? Person;
+                public Address? Address;
             }
 
-            public class Person
+            public record Person
             {
-                public Name Name;
-                public string Title;
+                public Name? Name;
+                public string Title = default!;
             }
 
-            public class Name
+            public record Name
             {
-                public string Last;
-                public string First;
+                public string Last = default!;
+                public string First = default!;
             }
 
-            public class Address
+            public record Address
             {
-                public string Street;
-                public string City;
-                public string Region;
-                public string PostalCode;
+                public string Street = default!;
+                public string City = default!;
+                public string Region = default!;
+                public string PostalCode = default!;
             }
 
             public static string Xml = @"
@@ -1175,12 +1175,12 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.NotEqual(null, item.Person);
-                Assert.NotEqual(null, item.Person.Title);
-                Assert.NotEqual(null, item.Person.Name);
-                Assert.NotEqual(null, item.Person.Name.First);
-                Assert.NotEqual(null, item.Address);
-                Assert.NotEqual(null, item.Address.Street);
+                Assert.NotNull(item.Person);
+                Assert.NotNull(item.Person.Title);
+                Assert.NotNull(item.Person.Name);
+                Assert.NotNull(item.Person.Name.First);
+                Assert.NotNull(item.Address);
+                Assert.NotNull(item.Address.Street);
             }
         }
 
@@ -1191,18 +1191,18 @@ namespace Test
         {
             [Table(Name = "Orders")]
             [ExtensionTable(Name ="Customers", KeyColumns="CustomerID")]
-            public class CustomerOrder
+            public record CustomerOrder
             {
                 [Column(Name="OrderID")]
-                public int? ID;
+                public int ID = default;
 
-                public string? CustomerID;
+                public string CustomerID = default!;
 
                 [Column(TableId="Customers", Name="ContactName")]
-                public string? Name;
+                public string Name = default!;
 
                 [Column(TableId="Customers")]
-                public string? Phone;
+                public string Phone = default!;
             }
         }
 
@@ -1215,21 +1215,21 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.Null(item.ID);
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotEqual(0, item.ID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
+                Assert.NotEqual(String.Empty, item.Name);
+                Assert.NotEqual(String.Empty, item.Phone);
             }
         }
 
         class MultiTable_AttributesOnContext
         {
-            public class CustomerOrder
+            public record CustomerOrder
             {
-                public int? ID;
-                public string? CustomerID;
-                public string? Name;
-                public string? Phone;
+                public int ID = default;
+                public string CustomerID = default!;
+                public string Name = default!;
+                public string Phone = default!;
             }
 
             public abstract class Context
@@ -1252,21 +1252,21 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.Null(item.ID);
-                Assert.NotEqual(null, item.CustomerID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotEqual(0, item.ID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
+                Assert.NotEqual(String.Empty, item.Name);
+                Assert.NotEqual(String.Empty, item.Phone);
             }
         }
 
         class MultiTable_XmlMapped
         {
-            public class CustomerOrder
+            public record CustomerOrder
             {
-                public int? ID;
-                public string? CustomerID;
-                public string? Name;
-                public string? Phone;
+                public int ID = default;
+                public string CustomerID = default!;
+                public string Name = default!;
+                public string Phone = default!;
             }
 
             public static readonly string Xml = @"
@@ -1291,10 +1291,10 @@ namespace Test
 
             foreach (var item in items)
             {
-                Assert.Null(item.ID);
-                Assert.NotNull(item.CustomerID);
-                Assert.NotEqual(null, item.Name);
-                Assert.NotEqual(null, item.Phone);
+                Assert.NotEqual(0, item.ID);
+                Assert.NotEqual(String.Empty, item.CustomerID);
+                Assert.NotEqual(String.Empty, item.Name);
+                Assert.NotEqual(String.Empty, item.Phone);
             }
         }
         #endregion

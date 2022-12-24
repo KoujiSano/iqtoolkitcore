@@ -51,7 +51,7 @@
                 );
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("ABC", entity.Value1);
             Assert.Equal("DEF", entity.Value2);
             Assert.Equal("GHI", entity.Value3);
@@ -71,7 +71,7 @@
                 );
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("ABC", entity.Value1);
             Assert.Equal("DEF", entity.Value2);
             Assert.Equal("GHI", entity.Value3);
@@ -99,13 +99,13 @@
                 ).ToList();
 
             var entity1 = db.MultiTableEntities.SingleOrDefault(m => m.ID == ids[0]);
-            Assert.Equal(true, entity1 != null);
+            Assert.True(entity1 != null);
             Assert.Equal("ABC", entity1.Value1);
             Assert.Equal("DEF", entity1.Value2);
             Assert.Equal("GHI", entity1.Value3);
 
             var entity2 = db.MultiTableEntities.SingleOrDefault(m => m.ID == ids[1]);
-            Assert.Equal(true, entity2 != null);
+            Assert.True(entity2 != null);
             Assert.Equal("123", entity2.Value1);
             Assert.Equal("456", entity2.Value2);
             Assert.Equal("789", entity2.Value3);
@@ -135,10 +135,10 @@
                     }
                     );
 
-            Assert.Equal(true, nUpdated == 3);
+            Assert.True(nUpdated == 3);
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("123", entity.Value1);
             Assert.Equal("456", entity.Value2);
             Assert.Equal("789", entity.Value3);
@@ -187,13 +187,13 @@
                 );
 
             var entity1 = db.MultiTableEntities.SingleOrDefault(m => m.ID == ids[0]);
-            Assert.Equal(true, entity1 != null);
+            Assert.True(entity1 != null);
             Assert.Equal("ABCx", entity1.Value1);
             Assert.Equal("DEFx", entity1.Value2);
             Assert.Equal("GHIx", entity1.Value3);
 
             var entity2 = db.MultiTableEntities.SingleOrDefault(m => m.ID == ids[1]);
-            Assert.Equal(true, entity2 != null);
+            Assert.True(entity2 != null);
             Assert.Equal("123x", entity2.Value1);
             Assert.Equal("456x", entity2.Value2);
             Assert.Equal("789x", entity2.Value3);
@@ -212,10 +212,10 @@
                 m => m.ID
                 );
 
-            Assert.Equal(true, id > 0);
+            Assert.True(id > 0);
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("ABC", entity.Value1);
             Assert.Equal("DEF", entity.Value2);
             Assert.Equal("GHI", entity.Value3);
@@ -234,7 +234,7 @@
                 m => m.ID
                 );
 
-            Assert.Equal(true, id > 0);
+            Assert.True(id > 0);
 
             db.MultiTableEntities.InsertOrUpdate(
                 new MultiTableEntity
@@ -247,7 +247,7 @@
                 );
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("123", entity.Value1);
             Assert.Equal("456", entity.Value2);
             Assert.Equal("789", entity.Value3);
@@ -265,13 +265,13 @@
 
             entity.ID = db.MultiTableEntities.Insert(entity, m => m.ID);
 
-            Assert.Equal(true, db.MultiTableEntities.Any(m => m.ID == entity.ID));
+            Assert.True(db.MultiTableEntities.Any(m => m.ID == entity.ID));
 
             int nDeleted = db.MultiTableEntities.Delete(entity);
 
             Assert.Equal(3, nDeleted);
 
-            Assert.Equal(false, db.MultiTableEntities.Any(m => m.ID == entity.ID));        
+            Assert.False(db.MultiTableEntities.Any(m => m.ID == entity.ID));        
         }
 
         public void TestSelectSubset()
@@ -291,7 +291,7 @@
                          .Select(m => new { m.ID, m.Value1 })
                          .SingleOrDefault(m => m.ID == id);
 
-            Assert.Equal(true, data != null);
+            Assert.True(data != null);
         }
     }
 }

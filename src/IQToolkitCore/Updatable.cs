@@ -205,7 +205,7 @@ namespace IQToolkit
         /// <param name="updateCheck">A predicate testing the suitablilty of the object in the collection if an update is required.</param>
         /// <param name="resultSelector">A function producing a result based on the object in the collection after the insert or update succeeds.</param>
         /// <returns>The value of the result if the insert or update succeeds, otherwise null.</returns>
-        public static S InsertOrUpdate<T, S>(this IUpdatable<T> collection, T instance, Expression<Func<T, bool>> updateCheck, Expression<Func<T, S>> resultSelector)
+        public static S? InsertOrUpdate<T, S>(this IUpdatable<T> collection, T instance, Expression<Func<T, bool>>? updateCheck, Expression<Func<T, S>> resultSelector)
         {
             var thisMethod = TypeHelper.FindMethod(typeof(Updatable),
                 nameof(InsertOrUpdate), 
@@ -221,7 +221,7 @@ namespace IQToolkit
                 resultSelector != null ? (Expression)Expression.Quote(resultSelector) : Expression.Constant(null, typeof(Expression<Func<T, S>>))
                 );
 
-            return (S)collection.Provider.Execute(callMyself);
+            return (S?)collection.Provider.Execute(callMyself);
         }
 
         /// <summary>

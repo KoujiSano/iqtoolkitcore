@@ -95,7 +95,7 @@ namespace IQToolkit.Data
         /// </summary>
         /// <param name="fnMember">A lambda expression that takes a single parameter of the entity type and a 
         /// body that references an association member of the parameter.</param>
-        public void IncludeWith<TEntity>(Expression<Func<TEntity, object>> fnMember)
+        public void IncludeWith<TEntity>(Expression<Func<TEntity, object?>> fnMember)
         {
             IncludeWith((LambdaExpression)fnMember, false);
         }
@@ -107,7 +107,7 @@ namespace IQToolkit.Data
         /// <param name="fnMember">A lambda expression that takes a single parameter of the entity type and a 
         /// body that references an association member of the parameter.</param>
         /// <param name="deferLoad">If true the member's elements will be defer loaded if possible.</param>
-        public void IncludeWith<TEntity>(Expression<Func<TEntity, object>> fnMember, bool deferLoad)
+        public void IncludeWith<TEntity>(Expression<Func<TEntity, object?>> fnMember, bool deferLoad)
         {
             IncludeWith((LambdaExpression)fnMember, deferLoad);
         }
@@ -153,7 +153,7 @@ namespace IQToolkit.Data
         /// Add a constraint or filter to an association member that is always applied whenever the member is
         /// referenced in a query, by specifing an operation on that member in a lambda expression.
         /// </summary>
-        public void AssociateWith<TEntity>(Expression<Func<TEntity, IEnumerable>> memberQuery)
+        public void AssociateWith<TEntity>(Expression<Func<TEntity, IEnumerable?>> memberQuery)
         {
             AssociateWith((LambdaExpression)memberQuery);
         }
@@ -176,7 +176,7 @@ namespace IQToolkit.Data
         /// </summary>
         class RootMemberFinder : ExpressionVisitor
         {
-            MemberExpression found;
+            MemberExpression? found;
             ParameterExpression parameter;
 
             private RootMemberFinder(ParameterExpression parameter)
@@ -184,11 +184,11 @@ namespace IQToolkit.Data
                 this.parameter = parameter;
             }
 
-            public static MemberExpression Find(Expression query, ParameterExpression parameter)
+            public static MemberExpression? Find(Expression query, ParameterExpression parameter)
             {
                 var finder = new RootMemberFinder(parameter);
                 finder.Visit(query);
-                return finder.found;
+                return finder?.found;
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression m)
