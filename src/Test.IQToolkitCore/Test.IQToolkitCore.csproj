@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="UnitTest1.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Common\Northwind.xml" />
   </ItemGroup>
 
@@ -40,7 +44,7 @@
 
   <ItemGroup>
     <None Update="SQLite\Northwind.db3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SQLite\Northwind.sl3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

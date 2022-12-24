@@ -11,10 +11,8 @@
             ExecSilent("DELETE FROM TestTable1");
         }
 
-        public override void Setup(string[] args)
+        public MultiTableTests()
         {
-            base.Setup(args);
-
             this.db = new MultiTableContext(this.GetProvider());
 
             ExecSilent("DROP TABLE TestTable3");
@@ -23,20 +21,21 @@
             ExecSilent("CREATE TABLE TestTable1 (ID int IDENTITY(1,1) PRIMARY KEY, Value1 VARCHAR(10))");
             ExecSilent("CREATE TABLE TestTable2 (ID int PRIMARY KEY REFERENCES TestTable1(ID), Value2 VARCHAR(10))");
             ExecSilent("CREATE TABLE TestTable3 (ID int PRIMARY KEY REFERENCES TestTable1(ID), Value3 VARCHAR(10))");
+
         }
 
-        public override void Teardown()
+        public override void Dispose()
         {
             ExecSilent("DROP TABLE TestTable3");
             ExecSilent("DROP TABLE TestTable2");
             ExecSilent("DROP TABLE TestTable1");
         }
 
-        public override void RunTest(Action testAction)
-        {
-            this.CleaupDatabase();
-            base.RunTest(testAction);
-        }
+        //public override void RunTest(Action testAction)
+        //{
+        //    this.CleaupDatabase();
+        //    base.RunTest(testAction);
+        //}
 
         public void TestInsert()
         {

@@ -17,12 +17,12 @@ namespace IQToolkit.Data.Common
     /// </summary>
     public abstract class DbExpressionVisitor : ExpressionVisitor
     {
-        protected override Expression Visit(Expression exp)
+        protected override Expression? Visit(Expression? exp)
         {
-            //if (exp == null)
-            //{
-            //    return null;
-            //}
+            if (exp == null)
+            {
+                return null;
+            }
             switch ((DbExpressionType)exp.NodeType)
             {
                 case DbExpressionType.Table:

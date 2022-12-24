@@ -2,21 +2,22 @@
 {
     public abstract class NorthwindCUDTests : NorthwindTestBase
     {
-        public override void RunTest(Action testAction)
+        //public override void RunTest(Action testAction)
+        //{
+        //    this.CleaupDatabase();
+        //    base.RunTest(testAction);
+        //}
+
+        public NorthwindCUDTests()
         {
             this.CleaupDatabase();
-            base.RunTest(testAction);
+            // base.Setup(args);
         }
 
-        public override void Setup(string[] args)
-        {
-            base.Setup(args);
-        }
-
-        public override void Teardown()
+        public override void Dispose()
         {
             this.CleaupDatabase();
-            base.Teardown();
+            base.Dispose();
         }
 
         private void CleaupDatabase()
@@ -25,6 +26,7 @@
             this.ExecSilent("DELETE FROM Customers WHERE CustomerID LIKE 'XX%'");
         }
 
+        [Fact]
         public void TestInsertCustomerNoResult()
         {
             var cust = new Customer
@@ -39,6 +41,7 @@
             Assert.Equal(1, result);  // returns 1 for success
         }
 
+        [Fact]
         public void TestInsertCustomerWithResult()
         {
             var cust = new Customer
@@ -53,23 +56,25 @@
             Assert.Equal(result, "Seattle");  // should be value we asked for
         }
 
+        [Fact]
         public void TestBatchInsertCustomersNoResult()
         {
             int n = 10;
             var custs = Enumerable.Range(1, n).Select(
                 i => new Customer
-                    {
-                        CustomerID = "XX" + i,
-                        CompanyName = "Company" + i,
-                        ContactName = "Contact" + i,
-                        City = "Seattle",
-                        Country = "USA"
-                    });
+                {
+                    CustomerID = "XX" + i,
+                    CompanyName = "Company" + i,
+                    ContactName = "Contact" + i,
+                    City = "Seattle",
+                    Country = "USA"
+                });
             var results = db.Customers.Batch(custs, (u, c) => u.Insert(c));
             Assert.Equal(n, results.Count());
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchInsertCustomersWithResult()
         {
             int n = 10;
@@ -87,6 +92,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, "Seattle")));
         }
 
+        [Fact]
         [ExcludeProvider("Access")] // problem with generating OrderID
         public void TestInsertOrderWithNoResult()
         {
@@ -100,6 +106,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         [ExcludeProvider("Access")] // problem with generating OrderID
         public void TestInsertOrderWithGeneratedIDResult()
         {
@@ -113,6 +120,7 @@
             Assert.NotEqual(1, result);
         }
 
+        [Fact]
         public void TestUpdateCustomerNoResult()
         {
             this.TestInsertCustomerNoResult(); // create customer "XX1"
@@ -130,6 +138,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestUpdateCustomerWithResult()
         {
             this.TestInsertCustomerNoResult(); // create customer "XX1"
@@ -147,6 +156,7 @@
             Assert.Equal("Portland", result);
         }
 
+        [Fact]
         public void TestUpdateCustomerWithUpdateCheckThatDoesNotSucceed()
         {
             this.TestInsertCustomerNoResult(); // create customer "XX1"
@@ -164,6 +174,7 @@
             Assert.Equal(0, result); // 0 for failure
         }
 
+        [Fact]
         public void TestUpdateCustomerWithUpdateCheckThatSucceeds()
         {
             this.TestInsertCustomerNoResult(); // create customer "XX1"
@@ -181,6 +192,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestBatchUpdateCustomer()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -201,6 +213,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchUpdateCustomerWithUpdateCheck()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -232,6 +245,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchUpdateCustomerWithResult()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -239,19 +253,20 @@
             int n = 10;
             var custs = Enumerable.Range(1, n).Select(
                 i => new Customer
-                    {
-                        CustomerID = "XX" + i,
-                        CompanyName = "Company" + i,
-                        ContactName = "Contact" + i,
-                        City = "Portland",
-                        Country = "USA"
-                    });
+                {
+                    CustomerID = "XX" + i,
+                    CompanyName = "Company" + i,
+                    ContactName = "Contact" + i,
+                    City = "Portland",
+                    Country = "USA"
+                });
 
             var results = db.Customers.Batch(custs, (u, c) => u.Update(c, null, d => d.City));
             Assert.Equal(n, results.Count());
             Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
         }
 
+        [Fact]
         public void TestBatchUpdateCustomerWithUpdateCheckAndResult()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -283,6 +298,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
         }
 
+        [Fact]
         public void TestUpsertNewCustomerNoResult()
         {
             var cust = new Customer
@@ -298,6 +314,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestUpsertExistingCustomerNoResult()
         {
             this.TestInsertCustomerNoResult();
@@ -315,6 +332,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestUpsertNewCustomerWithResult()
         {
             var cust = new Customer
@@ -330,6 +348,7 @@
             Assert.Equal("Seattle", result);
         }
 
+        [Fact]
         public void TestUpsertExistingCustomerWithResult()
         {
             this.TestInsertCustomerNoResult();
@@ -347,6 +366,7 @@
             Assert.Equal("Portland", result);
         }
 
+        [Fact]
         public void TestUpsertNewCustomerWithUpdateCheck()
         {
             var cust = new Customer
@@ -362,6 +382,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestUpsertExistingCustomerWithUpdateCheck()
         {
             this.TestInsertCustomerNoResult();
@@ -379,6 +400,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestBatchUpsertNewCustomersNoResult()
         {
             int n = 10;
@@ -397,6 +419,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchUpsertExistingCustomersNoResult()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -417,6 +440,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchUpsertNewCustomersWithResult()
         {
             int n = 10;
@@ -435,6 +459,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
         }
 
+        [Fact]
         public void TestBatchUpsertExistingCustomersWithResult()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -455,6 +480,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, "Portland")));
         }
 
+        [Fact]
         public void TestBatchUpsertNewCustomersWithUpdateCheck()
         {
             int n = 10;
@@ -484,6 +510,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchUpsertExistingCustomersWithUpdateCheck()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -515,6 +542,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestDeleteCustomer()
         {
             this.TestInsertCustomerNoResult();
@@ -524,7 +552,7 @@
                 CustomerID = "XX1",
                 CompanyName = "Company1",
                 ContactName = "Contact1",
-                City = "Seattle", 
+                City = "Seattle",
                 Country = "USA"
             };
 
@@ -532,6 +560,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestDeleteCustomerForNonExistingCustomer()
         {
             this.TestInsertCustomerNoResult();
@@ -549,6 +578,7 @@
             Assert.Equal(0, result);
         }
 
+        [Fact]
         public void TestDeleteCustomerWithDeleteCheckThatSucceeds()
         {
             this.TestInsertCustomerNoResult();
@@ -566,6 +596,7 @@
             Assert.Equal(1, result);
         }
 
+        [Fact]
         public void TestDeleteCustomerWithDeleteCheckThatDoesNotSucceed()
         {
             this.TestInsertCustomerNoResult();
@@ -583,6 +614,7 @@
             Assert.Equal(0, result);
         }
 
+        [Fact]
         public void TestBatchDeleteCustomers()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -603,6 +635,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchDeleteCustomersWithDeleteCheck()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -623,6 +656,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 1)));
         }
 
+        [Fact]
         public void TestBatchDeleteCustomersWithDeleteCheckThatDoesNotSucceed()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -643,6 +677,7 @@
             Assert.Equal(true, results.All(r => object.Equals(r, 0)));
         }
 
+        [Fact]
         public void TestDeleteWhere()
         {
             this.TestBatchInsertCustomersNoResult();
@@ -651,6 +686,7 @@
             Assert.Equal(10, result);
         }
 
+        [Fact]
         public void TestSessionIdentityCache()
         {
             NorthwindSession ns = new NorthwindSession(this.GetProvider());
@@ -664,6 +700,7 @@
             Assert.Equal(cust, cust2);
         }
 
+        [Fact]
         public void TestSessionProviderNotIdentityCached()
         {
             NorthwindSession ns = new NorthwindSession(this.GetProvider());
@@ -679,16 +716,17 @@
             Assert.NotEqual(cust, cust2);
         }
 
+        [Fact]
         public void TestSessionSubmitActionOnModify()
         {
             var cust = new Customer
-                {
-                    CustomerID = "XX1",
-                    CompanyName = "Company1",
-                    ContactName = "Contact1",
-                    City = "Seattle",
-                    Country = "USA"
-                };
+            {
+                CustomerID = "XX1",
+                CompanyName = "Company1",
+                ContactName = "Contact1",
+                City = "Seattle",
+                Country = "USA"
+            };
 
             this.db.Customers.Insert(cust);
 
@@ -714,17 +752,18 @@
             Assert.Equal(SubmitAction.Update, ns.Customers.GetSubmitAction(cust));
         }
 
+        [Fact]
         public void TestSessionSubmitActionOnInsert()
         {
             NorthwindSession ns = new NorthwindSession(this.GetProvider());
             var cust = new Customer
-                {
-                    CustomerID = "XX1",
-                    CompanyName = "Company1",
-                    ContactName = "Contact1",
-                    City = "Seattle",
-                    Country = "USA"
-                };
+            {
+                CustomerID = "XX1",
+                CompanyName = "Company1",
+                ContactName = "Contact1",
+                City = "Seattle",
+                Country = "USA"
+            };
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust));
 
             ns.Customers.InsertOnSubmit(cust);
@@ -737,6 +776,7 @@
             Assert.Equal(SubmitAction.Update, ns.Customers.GetSubmitAction(cust));
         }
 
+        [Fact]
         public void TestSessionSubmitActionOnInsertOrUpdate()
         {
             NorthwindSession ns = new NorthwindSession(this.GetProvider());
@@ -760,6 +800,7 @@
             Assert.Equal(SubmitAction.Update, ns.Customers.GetSubmitAction(cust));
         }
 
+        [Fact]
         public void TestSessionSubmitActionOnUpdate()
         {
             var cust = new Customer
@@ -785,6 +826,7 @@
             Assert.Equal(SubmitAction.Update, ns.Customers.GetSubmitAction(cust));
         }
 
+        [Fact]
         public void TestSessionSubmitActionOnDelete()
         {
             var cust = new Customer
@@ -811,6 +853,7 @@
             Assert.Equal(SubmitAction.None, ns.Customers.GetSubmitAction(cust));
         }
 
+        [Fact]
         public void TestDeleteThenInsertSamePK()
         {
             var cust = new Customer
@@ -858,6 +901,7 @@
             Assert.Equal(SubmitAction.Update, ns.Customers.GetSubmitAction(cust2));
         }
 
+        [Fact]
         public void TestInsertThenDeleteSamePK()
         {
             var cust = new Customer
@@ -905,25 +949,26 @@
             Assert.Equal(SubmitAction.Update, ns.Customers.GetSubmitAction(cust2));
         }
 
-         [ExcludeProvider("Access")] // Access does not auto generate the OrderID
-         public void TestSessionGeneratedId()
-         {
-             this.TestInsertCustomerNoResult(); // create customer "XX1"
- 
-             NorthwindSession ns = new NorthwindSession(this.GetProvider());
- 
-             var order = new Order
-             {
-                 CustomerID = "XX1",
-                 OrderDate = DateTime.Today,
-             };
- 
-             ns.Orders.InsertOnSubmit(order);
- 
-             Assert.Equal(0, order.OrderID);
-             ns.SubmitChanges();
- 
-             Assert.NotEqual(0, order.OrderID);
-         }
+        [Fact]
+        [ExcludeProvider("Access")] // Access does not auto generate the OrderID
+        public void TestSessionGeneratedId()
+        {
+            this.TestInsertCustomerNoResult(); // create customer "XX1"
+
+            NorthwindSession ns = new NorthwindSession(this.GetProvider());
+
+            var order = new Order
+            {
+                CustomerID = "XX1",
+                OrderDate = DateTime.Today,
+            };
+
+            ns.Orders.InsertOnSubmit(order);
+
+            Assert.Equal(0, order.OrderID);
+            ns.SubmitChanges();
+
+            Assert.NotEqual(0, order.OrderID);
+        }
     }
 }

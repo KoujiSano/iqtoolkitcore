@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using IQToolkit.Data;
-using IQToolkit.Data.Mapping;
-using IQToolkit.Data.SQLite;
-
 namespace Test
 {
-    public class ProgramTest
+    public class SQLiteTest
     {
         //public static void Main(string[] args)
         //{
@@ -16,7 +12,7 @@ namespace Test
 
         private static DbEntityProvider CreateNorthwindProvider()
         {
-            return new SQLiteQueryProvider("Northwind.db3", new AttributeMapping(typeof(Test.NorthwindWithAttributes)));
+            return new SQLiteQueryProvider("SQLite\\Northwind.db3", new AttributeMapping(typeof(Test.NorthwindWithAttributes)));
         }
 
         public class NorthwindMappingTests : Test.NorthwindMappingTests

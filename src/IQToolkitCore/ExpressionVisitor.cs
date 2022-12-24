@@ -12,11 +12,11 @@ namespace IQToolkit
         {
         }
 
-        protected virtual Expression Visit(Expression? exp)
+        protected virtual Expression? Visit(Expression? exp)
         {
             if (exp == null)
             {
-                throw new NullReferenceException();
+                return null;
             }
 
             switch (exp.NodeType)

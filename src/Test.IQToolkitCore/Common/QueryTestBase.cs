@@ -1,16 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using System.Collections;
-using System.Reflection;
-using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-
 namespace Test
 {
 
-    public abstract class QueryTestBase
+    public abstract class QueryTestBase : IDisposable
     {
         private bool executeQueries;
 
@@ -21,9 +15,7 @@ namespace Test
 
         private DbEntityProvider provider;
 
-        public QueryTestBase()
-        {
-        }
+        
 
         public DbEntityProvider GetProvider()
         {
@@ -32,15 +24,15 @@ namespace Test
 
         protected abstract DbEntityProvider CreateProvider();
 
-        public virtual void Setup(string[] args)
+        public QueryTestBase()
         {
             this.provider = this.CreateProvider();
             this.provider.Connection.Open();
 
-            if (args.Any(a => a == "-log"))
-            {
-                this.provider.Log = Console.Out;
-            }
+            //if (args.Any(a => a == "-log"))
+            //{
+            //    this.provider.Log = Console.Out;
+            //}
 
             this.executeQueries = this.ExecuteQueries();
 
@@ -81,19 +73,6 @@ namespace Test
             }
         }
 
-        public virtual void Teardown()
-        {
-            if (this.provider != null)
-            {
-                this.provider.Connection.Close();
-            }
-
-            if (this.baselineWriter != null)
-            {
-                this.baselineWriter.Flush();
-                this.baselineWriter.Close();
-            }
-        }
 
         public virtual bool CanRunTest(MethodInfo testMethod)
         {
@@ -116,26 +95,26 @@ namespace Test
             return true;
         }
 
-        public virtual void RunTest(Action testAction)
-        {
-            this.baselineKey = testAction.Method.Name;
+        //public virtual void RunTest(Action testAction)
+        //{
+        //    this.baselineKey = testAction.Method.Name;
 
-            try
-            {
-                testAction();
-            }
-            catch (Exception e)
-            {
-                if (this.queryText != null)
-                {
-                    // throw new TestFailureException(e.Message + "\r\n\r\n" + this.queryText);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
+        //    try
+        //    {
+        //        testAction();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        if (this.queryText != null)
+        //        {
+        //            // throw new TestFailureException(e.Message + "\r\n\r\n" + this.queryText);
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+        //}
 
         protected void TestQuery(IQueryable query)
         {
@@ -290,6 +269,20 @@ namespace Test
             {
                 var msg = e.Message;
                 return false;
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            if (this.provider != null)
+            {
+                this.provider.Connection.Close();
+            }
+
+            if (this.baselineWriter != null)
+            {
+                this.baselineWriter.Flush();
+                this.baselineWriter.Close();
             }
         }
     }
