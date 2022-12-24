@@ -1,21 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Xml;
-using System.Xml.Linq;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Test
 {
-    using IQToolkit.Data;
-    using IQToolkit.Data.Common;
 
     public abstract class QueryTestBase
     {
@@ -37,7 +26,10 @@ namespace Test
             return this.provider;
         }
 
-        protected abstract DbEntityProvider CreateProvider();
+        public DbEntityProvider CreateProvider()
+        {
+            return new SQLiteQueryProvider("Northwind.db3", new AttributeMapping(typeof(Test.NorthwindWithAttributes)));
+        }
 
         public virtual void Setup(string[] args)
         {
@@ -102,47 +94,47 @@ namespace Test
             }
         }
 
-        public virtual bool CanRunTest(MethodInfo testMethod)
-        {
-            ExcludeProvider[] exclusions = (ExcludeProvider[])testMethod.GetCustomAttributes(typeof(ExcludeProvider), true);
-            foreach (var exclude in exclusions)
-            {
-                if (
-                    // actual name of the provider type
-                    string.Compare(this.provider.GetType().Name, exclude.Provider, StringComparison.OrdinalIgnoreCase) == 0
-                    // prefix of the provider type xxxQueryProvider
-                    || string.Compare(this.provider.GetType().Name, exclude.Provider + "QueryProvider", StringComparison.OrdinalIgnoreCase) == 0
-                    // last name of the namespace
-                    || string.Compare(this.provider.GetType().Namespace.Split(new[] { '.' }).Last(), exclude.Provider, StringComparison.OrdinalIgnoreCase) == 0
-                    )
-                {
-                    return false;
-                }
-            }
+        //public virtual bool CanRunTest(MethodInfo testMethod)
+        //{
+        //    ExcludeProvider[] exclusions = (ExcludeProvider[])testMethod.GetCustomAttributes(typeof(ExcludeProvider), true);
+        //    foreach (var exclude in exclusions)
+        //    {
+        //        if (
+        //            // actual name of the provider type
+        //            string.Compare(this.provider.GetType().Name, exclude.Provider, StringComparison.OrdinalIgnoreCase) == 0
+        //            // prefix of the provider type xxxQueryProvider
+        //            || string.Compare(this.provider.GetType().Name, exclude.Provider + "QueryProvider", StringComparison.OrdinalIgnoreCase) == 0
+        //            // last name of the namespace
+        //            || string.Compare(this.provider.GetType().Namespace.Split(new[] { '.' }).Last(), exclude.Provider, StringComparison.OrdinalIgnoreCase) == 0
+        //            )
+        //        {
+        //            return false;
+        //        }
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public virtual void RunTest(Action testAction)
-        {
-            this.baselineKey = testAction.Method.Name;
+        //public virtual void RunTest(Action testAction)
+        //{
+        //    this.baselineKey = testAction.Method.Name;
 
-            try
-            {
-                testAction();
-            }
-            catch (Exception e)
-            {
-                if (this.queryText != null)
-                {
-                    throw new TestFailureException(e.Message + "\r\n\r\n" + this.queryText);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
+        //    try
+        //    {
+        //        testAction();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        if (this.queryText != null)
+        //        {
+        //            throw new InvalidOperationException(e.Message + "\r\n\r\n" + this.queryText);
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+        //}
 
         protected void TestQuery(IQueryable query)
         {
@@ -202,7 +194,7 @@ namespace Test
 
                     if (!expectedToFail)
                     {
-                        throw new TestFailureException(e.Message + "\r\n\r\n" + queryText);
+                        throw new InvalidOperationException(e.Message + "\r\n\r\n" + queryText);
                     }
                 }
 
@@ -212,7 +204,7 @@ namespace Test
                 }
             }
 
-            string baseline = null;
+            string? baseline = null;
             if (this.baselines != null && this.baselines.TryGetValue(this.baselineKey, out baseline))
             {
                 string trimAct = TrimExtraWhiteSpace(queryText).Trim();

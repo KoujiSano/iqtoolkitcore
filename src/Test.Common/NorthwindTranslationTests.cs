@@ -1,20 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Xml;
-
 namespace Test
 {
-    using IQToolkit.Data;
-    using IQToolkit.Data.Mapping;
 
-    public abstract class NorthwindTranslationTests : NorthwindTestBase
+    public class NorthwindTranslationTests : NorthwindTestBase
     {
         public NorthwindTranslationTests()
         {
@@ -169,7 +159,7 @@ namespace Test
 
         public void TestSelectConstantNullString()
         {
-            TestQuery(db.Customers.Select(c => (string)null));
+            TestQuery(db.Customers.Select(c => (string?)null));
         }
 
         public void TestSelectLocal()

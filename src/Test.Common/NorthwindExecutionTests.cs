@@ -1,15 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Test 
+namespace Test
 {
-    using IQToolkit;
-    using IQToolkit.Data;
-    using IQToolkit.Data.Mapping;
 
     public abstract class NorthwindExecutionTests : NorthwindTestBase
     {
@@ -1165,16 +1158,16 @@ namespace Test
         {
             var zero = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Atan((c.CustomerID == "ALFKI") ? 0.0 : 0.0));
             var one = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Atan((c.CustomerID == "ALFKI") ? 1.0 : 1.0));
-            Assert.Equal(Math.Atan(0.0), zero, 0.0001);
-            Assert.Equal(Math.Atan(1.0), one, 0.0001);
+            Assert.Equal(Math.Atan(0.0), zero); //, 0.0001);
+            Assert.Equal(Math.Atan(1.0), one); //, 0.0001);
         }
 
         public void TestMathCos()
         {
             var zero = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Cos((c.CustomerID == "ALFKI") ? 0.0 : 0.0));
             var pi = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Cos((c.CustomerID == "ALFKI") ? Math.PI : Math.PI));
-            Assert.Equal(Math.Cos(0.0), zero, 0.0001);
-            Assert.Equal(Math.Cos(Math.PI), pi, 0.0001);
+            Assert.Equal(Math.Cos(0.0), zero); //, 0.0001);
+            Assert.Equal(Math.Cos(Math.PI), pi); //, 0.0001);
         }
 
         public void TestMathSin()
@@ -1183,16 +1176,16 @@ namespace Test
             var pi = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Sin((c.CustomerID == "ALFKI") ? Math.PI : Math.PI));
             var pi2 = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Sin(((c.CustomerID == "ALFKI") ? Math.PI : Math.PI)/2.0));
             Assert.Equal(Math.Sin(0.0), zero);
-            Assert.Equal(Math.Sin(Math.PI), pi, 0.0001);
-            Assert.Equal(Math.Sin(Math.PI/2.0), pi2, 0.0001);
+            Assert.Equal(Math.Sin(Math.PI), pi); //, 0.0001);
+            Assert.Equal(Math.Sin(Math.PI / 2.0), pi2); //, 0.0001);
         }
 
         public void TestMathTan()
         {
             var zero = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Tan((c.CustomerID == "ALFKI") ? 0.0 : 0.0));
             var pi = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Tan((c.CustomerID == "ALFKI") ? Math.PI : Math.PI));
-            Assert.Equal(Math.Tan(0.0), zero, 0.0001);
-            Assert.Equal(Math.Tan(Math.PI), pi, 0.0001);
+            Assert.Equal(Math.Tan(0.0), zero); // , 0.0001);
+            Assert.Equal(Math.Tan(Math.PI), pi); //, 0.0001);
         }
 
         public void TestMathExp()
@@ -1200,17 +1193,17 @@ namespace Test
             var zero = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Exp((c.CustomerID == "ALFKI") ? 0.0 : 0.0));
             var one = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Exp((c.CustomerID == "ALFKI") ? 1.0 : 1.0));
             var two = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Exp((c.CustomerID == "ALFKI") ? 2.0 : 2.0));
-            Assert.Equal(Math.Exp(0.0), zero, 0.0001);
-            Assert.Equal(Math.Exp(1.0), one, 0.0001);
-            Assert.Equal(Math.Exp(2.0), two, 0.0001);
+            Assert.Equal(Math.Exp(0.0), zero); // , 0.0001);
+            Assert.Equal(Math.Exp(1.0), one); //, 0.0001);
+            Assert.Equal(Math.Exp(2.0), two); // , 0.0001);
         }
 
         public void TestMathLog()
         {
             var one = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Log((c.CustomerID == "ALFKI") ? 1.0 : 1.0));
             var e = db.Customers.Where(c => c.CustomerID == "ALFKI").Sum(c => Math.Log((c.CustomerID == "ALFKI") ? Math.E : Math.E));
-            Assert.Equal(Math.Log(1.0), one, 0.0001);
-            Assert.Equal(Math.Log(Math.E), e, 0.0001);
+            Assert.Equal(Math.Log(1.0), one); //, 0.0001);
+            Assert.Equal(Math.Log(Math.E), e); //, 0.0001);
         }
 
         public void TestMathSqrt()

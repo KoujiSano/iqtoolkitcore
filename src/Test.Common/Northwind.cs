@@ -1,15 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // This source code is made available under the terms of the Microsoft Public License (MS-PL)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Test
 {
-    using IQToolkit;
-    using IQToolkit.Data;
-    using IQToolkit.Data.Mapping;
 
     public class Customer
     {
@@ -133,14 +128,14 @@ namespace Test
         [Column(Member = nameof(Customer.ContactName))]
         [Column(Member = nameof(Customer.CompanyName))]
         [Column(Member = nameof(Customer.Phone))]
-        [Column(Member = nameof(Customer.City), DbType="NVARCHAR(20)")]
+        [Column(Member = nameof(Customer.City), DbType = "NVARCHAR(20)")]
         [Column(Member = nameof(Customer.Country))]
         [Association(Member = nameof(Customer.Orders), KeyMembers = nameof(Customer.CustomerID), RelatedKeyMembers = nameof(Order.CustomerID))]
         public override IEntityTable<Customer> Customers
         {
             get { return base.Customers; }
         }
-        
+
         [Table]
         [Column(Member = nameof(Order.OrderID), IsPrimaryKey = true, IsGenerated = true)]
         [Column(Member = nameof(Order.CustomerID))]
@@ -156,14 +151,14 @@ namespace Test
         [Column(Member = nameof(OrderDetail.OrderID), IsPrimaryKey = true)]
         [Column(Member = nameof(OrderDetail.ProductID), IsPrimaryKey = true)]
         [Association(Member = nameof(OrderDetail.Product), KeyMembers = nameof(OrderDetail.ProductID), RelatedKeyMembers = nameof(Product.ID))]
-        [Association(Member = nameof(OrderDetail.Order), KeyMembers =nameof(OrderDetail.OrderID), RelatedKeyMembers = nameof(Order.OrderID))]
+        [Association(Member = nameof(OrderDetail.Order), KeyMembers = nameof(OrderDetail.OrderID), RelatedKeyMembers = nameof(Order.OrderID))]
         public override IEntityTable<OrderDetail> OrderDetails
         {
             get { return base.OrderDetails; }
         }
 
         [Table]
-        [Column(Member = nameof(Product.ID), Name="ProductId", IsPrimaryKey = true)]
+        [Column(Member = nameof(Product.ID), Name = "ProductId", IsPrimaryKey = true)]
         [Column(Member = nameof(Product.ProductName))]
         [Column(Member = nameof(Product.Discontinued))]
         public override IEntityTable<Product> Products

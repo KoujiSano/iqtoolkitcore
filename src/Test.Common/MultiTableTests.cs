@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-using IQToolkit;
-using IQToolkit.Data;
-
-namespace Test
+﻿namespace Test
 {
     public abstract class MultiTableTests : QueryTestBase
     {
         protected MultiTableContext db;
+
+
 
         private void CleaupDatabase()
         {
@@ -42,12 +34,14 @@ namespace Test
             ExecSilent("DROP TABLE TestTable1");
         }
 
-        public override void RunTest(Action testAction)
-        {
-            this.CleaupDatabase();
-            base.RunTest(testAction);
-        }
+        //public override void RunTest(Action testAction)
+        //{
+        //    this.CleaupDatabase();
+        //    base.RunTest(testAction);
+        //}
 
+
+        [Fact]
         public void TestInsert()
         {
             int id = 
@@ -62,7 +56,7 @@ namespace Test
                 );
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("ABC", entity.Value1);
             Assert.Equal("DEF", entity.Value2);
             Assert.Equal("GHI", entity.Value3);
@@ -82,7 +76,7 @@ namespace Test
                 );
 
             var entity = db.MultiTableEntities.SingleOrDefault(m => m.ID == id);
-            Assert.Equal(true, entity != null);
+            Assert.True(entity != null);
             Assert.Equal("ABC", entity.Value1);
             Assert.Equal("DEF", entity.Value2);
             Assert.Equal("GHI", entity.Value3);
